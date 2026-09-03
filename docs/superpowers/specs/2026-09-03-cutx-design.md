@@ -63,8 +63,15 @@ paths where a bug destroys user data.
 ### 4. Visual feedback
 
 A small translucent HUD appears near the pointer at cut time showing the item count,
-then fades. The menu-bar icon switches to a "loaded" state with a badge count that
-persists until paste or clear.
+then fades. The menu-bar icon switches from an open pair of scissors to a closed
+pair, with a badge count that persists until paste or clear.
+
+Both menu-bar icons are drawn in code as template images, so macOS tints them
+correctly in light and dark menu bars. SF Symbols has no closed-scissors glyph, and
+drawing both shapes ourselves also keeps the open and closed states visually
+consistent with each other.
+
+The app icon is a white pair of scissors on a rounded blue gradient tile.
 
 Rejected: overlaying a gray rectangle on the Finder icons via the Accessibility
 tree. It desynchronizes on scroll, window move, view change, or Space switch —
@@ -163,9 +170,29 @@ Menu-bar menu:
 
 The "Clear" item is a menu action only; it is not a global shortcut.
 
-No separate preferences window. The only window is a first-run onboarding screen
-explaining the two required permissions, with a button that opens the exact System
-Settings pane. It stops appearing once both permissions are granted.
+No separate preferences window for the four toggles — they live in the menu itself.
+There is one window, the **Setup window**, reachable at any time from a "Setup and
+Permissions…" menu item, and shown automatically on first run and whenever a
+permission is missing.
+
+The Setup window is not a static explainer. It contains:
+
+- **A live checklist.** One row per requirement — Accessibility, Automation
+  (Finder) — each showing its real current state, re-checked once a second. A row
+  flips from ✗ to ✓ while the user watches, which is the confirmation that what
+  they just did in System Settings actually worked.
+- **An animated walkthrough.** A looping, drawn-in-code mock of the System Settings
+  pane with a cursor that moves to the CutX row and flips the toggle on. Written
+  instructions describing where to click are far harder to follow than watching it
+  happen once.
+- **A button per row** that opens the exact System Settings pane for that
+  permission.
+
+This exists because of a real failure observed during development: with
+Accessibility revoked, CutX did nothing at all and gave no indication why. A
+permission-gated utility that fails silently is indistinguishable from a broken
+one, and a user will delete it rather than hunt for a toggle. Permission state must
+be visible, not inferred from behavior.
 
 Buy Me a Coffee link: `https://buymeacoffee.com/ahmedhelal` (suggested tier: $3).
 
