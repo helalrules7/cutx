@@ -4,6 +4,7 @@ import CutXCore
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private let preferences = Preferences()
     private var menuBar: MenuBarController?
+    private lazy var sounds = SoundPlayer(preferences: preferences)
     private var monitor: HotkeyMonitor?
 
     private var state = CutState()
@@ -15,6 +16,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         let menuBar = MenuBarController(preferences: preferences)
         menuBar.onClear = { [weak self] in self?.clearCut() }
+        menuBar.onPreviewSound = { [weak self] id in self?.sounds.preview(id) }
         self.menuBar = menuBar
 
         FinderBridge.prepare()
@@ -108,6 +110,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 changeCount: NSPasteboard.general.changeCount
             )
             self.menuBar?.update(names: self.state.displayNames)
+            self.sounds.playCut()
         }
     }
 
@@ -115,6 +118,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         FinderBridge.sendMoveItemHere()
         state.clear()
         menuBar?.update(names: [])
+        sounds.playPaste()
     }
 
     private func clearCut() {
