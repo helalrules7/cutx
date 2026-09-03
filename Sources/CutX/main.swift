@@ -7,6 +7,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private lazy var sounds = SoundPlayer(preferences: preferences)
     private lazy var hud = CutHUD(preferences: preferences)
     private var monitor: HotkeyMonitor?
+    private lazy var mainWindow = MainWindow(preferences: preferences, player: sounds)
 
     private var state = CutState()
     private var finderFrontmost = false
@@ -15,9 +16,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var selectionQueryInFlight = false
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        let menuBar = MenuBarController(preferences: preferences)
+        let menuBar = MenuBarController()
         menuBar.onClear = { [weak self] in self?.clearCut() }
-        menuBar.onPreviewSound = { [weak self] id in self?.sounds.preview(id) }
+        menuBar.onOpenWindow = { [weak self] in self?.mainWindow.show() }
         self.menuBar = menuBar
 
         FinderBridge.prepare()
@@ -35,7 +36,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         })
         monitor.onCut = { [weak self] in self?.performCut() }
         monitor.onPaste = { [weak self] in self?.performPaste() }
-        _ = monitor.start()
+        if !monitor.start() {
+            // Inert without Accessibility. Saying nothing here is what makes users
+            // conclude the app is broken and delete it.
+            mainWindow.show()
+            Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
+                guard PermissionsCoordinator.allGranted else { return }
+                timer.invalidate()
+                _ = monitor.start()
+            }
+        }
         self.monitor = monitor
 
         preferences.launchAtLogin = LaunchAtLogin.isEnabled
