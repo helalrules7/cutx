@@ -6,8 +6,8 @@ Everything App Store Connect asks for, written out. Paste, don't improvise.
 
 | Field | Value |
 |---|---|
-| Name (30 chars max) | `CutX` |
-| Subtitle (30 chars max) | `Cut and paste files in Finder` |
+| Name (30 chars max) | `CutX — Cut and Paste Files` |
+| Subtitle (30 chars max) | `Move files with ⌘X and ⌘V` |
 | Bundle ID | `com.helalrules.CutX` |
 | SKU | `cutx-mac-001` |
 | Primary category | Utilities |
@@ -15,8 +15,17 @@ Everything App Store Connect asks for, written out. Paste, don't improvise.
 | Price | Free |
 | Age rating | 4+ |
 
-**Check the name is free before anything else.** "CutX" may be taken. If it is,
-`CutX — Cut & Paste Files` still fits in 30 characters.
+**On the name:** plain `CutX` is unavailable in App Store Connect, even though a
+public App Store search returns nothing for it — Apple reserves names for apps that
+were registered but never shipped, and for apps withdrawn from sale. Searching the
+storefront does not prove availability; only App Store Connect does.
+
+The app itself is still called **CutX** everywhere — in the bundle, the menu bar,
+and the interface. Only the store listing carries the longer name.
+
+Name and subtitle are deliberately non-overlapping: Apple indexes both, so
+repeating "cut and paste files" in each would waste one of them. Between them they
+cover cut, paste, files, move, and the shortcut itself.
 
 ## Description
 
