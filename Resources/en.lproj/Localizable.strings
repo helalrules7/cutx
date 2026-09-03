@@ -1,0 +1,57 @@
+/* Menu bar */
+"menu.nothingCut" = "Nothing cut";
+"menu.itemCut" = "%d item cut";
+"menu.itemsCut" = "%d items cut";
+"menu.clear" = "Clear";
+"menu.open" = "Open CutX";
+"menu.coffee" = "Buy me a coffee";
+"menu.quit" = "Quit CutX";
+
+/* Window */
+"window.title" = "CutX";
+"tab.general" = "General";
+"tab.sounds" = "Sounds";
+"tab.about" = "About";
+
+/* General tab */
+"general.active" = "CutX is active";
+"general.setupNeeded" = "Setup needed — CutX is not active";
+"general.alsoUseControl" = "Also use ⌃X";
+"general.showIndicator" = "Show cut indicator";
+"general.launchAtLogin" = "Launch at login";
+"general.language" = "Language";
+"general.howToUse" = "HOW TO USE";
+"general.howTo.cut" = "Cut the selected files in Finder";
+"general.howTo.paste" = "Move them here";
+"general.howTo.undo" = "Undo — it's Finder's own undo";
+
+/* Permissions */
+"permission.accessibility" = "Accessibility";
+"permission.accessibility.detail" = "Lets CutX see ⌘X and ⌘V. Without this, nothing happens at all.";
+"permission.automation" = "Control Finder";
+"permission.automation.detail" = "Lets CutX ask Finder to move your files. Finder does the moving.";
+"permission.open" = "Open";
+"permission.hint" = "Find CutX in the list and switch it on:";
+
+/* Sounds tab */
+"sounds.play" = "Play sound";
+"sounds.volume" = "Volume";
+"sounds.cutSound" = "CUT SOUND";
+"sound.snip" = "Snip";
+"sound.tick" = "Tick";
+"sound.scissors" = "Scissors";
+"sound.paper" = "Paper";
+"sound.knife" = "Knife";
+"sound.bush" = "Bush";
+
+/* About tab */
+"about.tagline" = "Cut and paste files in Finder, the way you expect.";
+"about.madeBy" = "Made by Ahmed Helal";
+"about.explanation" = "CutX never touches your files — it asks Finder to do the move. That is why undo, the progress window, and the Replace / Keep Both dialog all work exactly as they normally do.";
+"about.coffee" = "Buy me a coffee";
+"about.source" = "View source on GitHub";
+"about.license" = "Free and open source · MIT licensed · Sound credits in ATTRIBUTIONS.md";
+
+/* Cut indicator */
+"hud.itemCut" = "%d item cut";
+"hud.itemsCut" = "%d items cut";

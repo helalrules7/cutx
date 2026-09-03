@@ -1,0 +1,57 @@
+/* Menu bar */
+"menu.nothingCut" = "لا يوجد شيء مقصوص";
+"menu.itemCut" = "عنصر واحد مقصوص";
+"menu.itemsCut" = "%d عناصر مقصوصة";
+"menu.clear" = "إلغاء القص";
+"menu.open" = "فتح CutX";
+"menu.coffee" = "ادعمني بفنجان قهوة";
+"menu.quit" = "إنهاء CutX";
+
+/* Window */
+"window.title" = "CutX";
+"tab.general" = "عام";
+"tab.sounds" = "الأصوات";
+"tab.about" = "حول";
+
+/* General tab */
+"general.active" = "CutX يعمل";
+"general.setupNeeded" = "الإعداد غير مكتمل — CutX لا يعمل";
+"general.alsoUseControl" = "استخدم ⌃X أيضًا";
+"general.showIndicator" = "إظهار مؤشر القص";
+"general.launchAtLogin" = "التشغيل عند بدء تسجيل الدخول";
+"general.language" = "اللغة";
+"general.howToUse" = "طريقة الاستخدام";
+"general.howTo.cut" = "قص الملفات المحددة في Finder";
+"general.howTo.paste" = "نقلها إلى هنا";
+"general.howTo.undo" = "تراجع — وهو تراجع Finder نفسه";
+
+/* Permissions */
+"permission.accessibility" = "إمكانية الوصول";
+"permission.accessibility.detail" = "تتيح لـ CutX قراءة ⌘X و ⌘V. بدونها لا يحدث أي شيء على الإطلاق.";
+"permission.automation" = "التحكم في Finder";
+"permission.automation.detail" = "تتيح لـ CutX أن يطلب من Finder نقل ملفاتك. Finder هو من ينفّذ النقل.";
+"permission.open" = "فتح";
+"permission.hint" = "ابحث عن CutX في القائمة وفعّله:";
+
+/* Sounds tab */
+"sounds.play" = "تشغيل الصوت";
+"sounds.volume" = "مستوى الصوت";
+"sounds.cutSound" = "صوت القص";
+"sound.snip" = "قصّة";
+"sound.tick" = "نقرة";
+"sound.scissors" = "مقص";
+"sound.paper" = "ورق";
+"sound.knife" = "سكين";
+"sound.bush" = "غصن";
+
+/* About tab */
+"about.tagline" = "قص ولصق الملفات في Finder، بالطريقة التي تتوقعها.";
+"about.madeBy" = "من تطوير أحمد هلال";
+"about.explanation" = "لا يلمس CutX ملفاتك أبدًا — بل يطلب من Finder تنفيذ النقل. لهذا السبب يعمل التراجع، ونافذة التقدّم، ومربع حوار الاستبدال أو الاحتفاظ بالاثنين، تمامًا كما تعمل دائمًا.";
+"about.coffee" = "ادعمني بفنجان قهوة";
+"about.source" = "الكود المصدري على GitHub";
+"about.license" = "مجاني ومفتوح المصدر · رخصة MIT · مصادر الأصوات في ATTRIBUTIONS.md";
+
+/* Cut indicator */
+"hud.itemCut" = "عنصر واحد مقصوص";
+"hud.itemsCut" = "%d عناصر مقصوصة";

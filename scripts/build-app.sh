@@ -19,6 +19,13 @@ cp "$ROOT/Resources/Info.plist" "$APP/Contents/Info.plist"
 cp -R "$ROOT/Resources/sounds" "$APP/Contents/Resources/sounds"
 cp "$ROOT/Resources/AppIcon.icns" "$APP/Contents/Resources/"
 
+# Localized strings. Lookup stays on the plain Bundle APIs because the .lproj
+# directories sit where a real app bundle keeps them.
+for lproj in "$ROOT"/Resources/*.lproj; do
+    [[ -d "$lproj" ]] || continue
+    cp -R "$lproj" "$APP/Contents/Resources/"
+done
+
 # Prefer the Developer ID identity when it is available, even for local builds.
 # Ad-hoc signatures change on every rebuild, and macOS treats a changed signature
 # as a different app — which silently revokes the Accessibility permission and

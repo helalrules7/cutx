@@ -24,6 +24,22 @@
     <string>Copyright © 2026 Ahmed Helal. MIT licensed.</string>
     <key>NSAppleEventsUsageDescription</key>
     <string>CutX needs to control Finder so it can copy your selection and move it where you paste.</string>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>en</string>
+    <key>CFBundleLocalizations</key>
+    <array>
+        <string>en</string>
+        <string>ar</string>
+        <string>es</string>
+        <string>fr</string>
+        <string>de</string>
+        <string>pt-BR</string>
+        <string>ru</string>
+        <string>zh-Hans</string>
+        <string>ja</string>
+        <string>tr</string>
+        <string>it</string>
+    </array>
     <key>CFBundleIconFile</key>
     <string>AppIcon</string>
 </dict>
