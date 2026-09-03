@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CutX — Privacy Policy</title>
+<meta name="description" content="CutX collects nothing. No analytics, no telemetry, no account, no network connections.">
+<link rel="icon" href="../assets/icon.png">
+<style>
+:root{--bg:#0b1020;--card:rgba(255,255,255,.05);--line:rgba(255,255,255,.12);
+      --fg:#eef2ff;--muted:#a8b3d1;--accent:#4d8dff}
+@media (prefers-color-scheme:light){
+  :root{--bg:#f6f8fd;--card:rgba(11,16,32,.04);--line:rgba(11,16,32,.10);--fg:#0b1020;--muted:#4c5878}
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);
+  font:16px/1.72 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",system-ui,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+.wrap{max-width:720px;margin:0 auto;padding:0 24px}
+header{border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;gap:10px;height:62px;font-weight:650}
+.bar img{width:28px;height:28px;border-radius:7px}
+.bar a{color:var(--fg);text-decoration:none;display:flex;align-items:center;gap:10px}
+h1{font-size:clamp(30px,5vw,42px);margin:52px 0 6px;letter-spacing:-.02em}
+.big{font-size:20px;color:var(--fg);background:var(--card);border:1px solid var(--line);
+  border-radius:14px;padding:20px 22px;margin:26px 0 34px;font-weight:600}
+h2{font-size:20px;margin:38px 0 10px}
+p,li{color:var(--muted)}
+li{margin-bottom:9px}
+b{color:var(--fg)}
+.updated{margin:44px 0 0;padding-top:22px;border-top:1px solid var(--line);font-size:14px;color:var(--muted)}
+footer{padding:34px 0 60px;color:var(--muted);font-size:14px}
+</style>
+</head>
+<body>
+<header><div class="wrap bar"><a href="../"><img src="../assets/icon.png" alt=""> CutX</a></div></header>
+
+<div class="wrap">
+<h1>Privacy Policy</h1>
+<p class="big">CutX collects nothing.</p>
+
+<p>That is the whole policy. Everything below just says it more specifically, so that
+nothing is left to interpretation.</p>
+
+<h2>What CutX does not do</h2>
+<ul>
+  <li>It does not collect, store, or transmit any personal information.</li>
+  <li>It has no analytics, no telemetry, no crash reporting, and no advertising.</li>
+  <li>It has no account and no server. <b>CutX makes no network connections of any kind.</b></li>
+  <li>It does not read the contents of your files.</li>
+</ul>
+
+<h2>What CutX does on your Mac</h2>
+<ul>
+  <li><b>Reads keystrokes</b> to recognise ⌘X and ⌘V. This requires macOS Accessibility
+      permission, which you grant explicitly. Keys are examined in memory only, to decide
+      whether the key is one of the two CutX acts on. Nothing is recorded, stored, or sent
+      anywhere. Every other key is passed straight through, untouched.</li>
+  <li><b>Asks Finder which files you have selected</b>, so it knows what to move, and asks
+      Finder to perform the move. This requires macOS Automation permission for Finder,
+      which you grant explicitly. CutX does not move files itself and never opens, reads,
+      or modifies their contents.</li>
+  <li><b>Stores your settings</b> — sound choice, volume, language, and the three switches —
+      in your Mac's standard preferences. They stay on your Mac.</li>
+</ul>
+
+<h2>Third parties</h2>
+<p>There are none. CutX includes no third-party SDKs, frameworks, or services.</p>
+
+<h2>Links you can choose to open</h2>
+<p>The About screen links to GitHub and to Buy Me a Coffee. Opening one hands the URL to
+your browser; from that point those sites' own privacy policies apply. CutX sends them
+nothing about you.</p>
+
+<h2>Verifying any of this</h2>
+<p>CutX is open source. The keystroke handling is a single pure function,
+<code>decide(event:context:)</code>, and you can read it at
+<a href="https://github.com/helalrules7/cutx">github.com/helalrules7/cutx</a>.</p>
+
+<h2>Changes</h2>
+<p>If this ever changes, it will change here first, and the app's release notes will say
+so plainly.</p>
+
+<h2>Contact</h2>
+<p><a href="https://github.com/helalrules7/cutx/issues">github.com/helalrules7/cutx/issues</a></p>
+
+<p class="updated">Last updated: 3 September 2026</p>
+</div>
+
+<footer><div class="wrap"><a href="../">← Back to CutX</a></div></footer>
+</body>
+</html>
