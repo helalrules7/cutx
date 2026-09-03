@@ -27,13 +27,10 @@ final class MenuBarController {
     }
 
     private func rebuild() {
-        guard let button = statusItem.button else { return }
-        // Task 12 replaces this with MenuBarIcon.image(open:).
-        button.image = NSImage(
-            systemSymbolName: names.isEmpty ? "scissors" : "scissors.circle.fill",
-            accessibilityDescription: "CutX"
-        )
-        button.title = names.isEmpty ? "" : " \(names.count)"
+        if let button = statusItem.button {
+            button.image = MenuBarIcon.image(open: names.isEmpty)
+            button.title = names.isEmpty ? "" : " \(names.count)"
+        }
     }
 
     /// Left click opens the window, right click shows the short menu. The menu is
@@ -76,6 +73,7 @@ final class MenuBarController {
 
         menu.addItem(.separator())
         menu.addItem(item("Open CutX", #selector(openTapped)))
+        menu.addItem(item("Buy me a coffee  ☕", #selector(coffeeTapped)))
         menu.addItem(NSMenuItem(
             title: "Quit CutX",
             action: #selector(NSApplication.terminate(_:)),
@@ -93,4 +91,8 @@ final class MenuBarController {
     @objc private func clearTapped() { onClear() }
 
     @objc private func openTapped() { onOpenWindow() }
+
+    @objc private func coffeeTapped() {
+        NSWorkspace.shared.open(URL(string: "https://buymeacoffee.com/ahmedhelal")!)
+    }
 }

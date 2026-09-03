@@ -17,6 +17,7 @@ mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 cp "$BIN" "$APP/Contents/MacOS/CutX"
 cp "$ROOT/Resources/Info.plist" "$APP/Contents/Info.plist"
 cp -R "$ROOT/Resources/sounds" "$APP/Contents/Resources/sounds"
+cp "$ROOT/Resources/AppIcon.icns" "$APP/Contents/Resources/"
 
 # Prefer the Developer ID identity when it is available, even for local builds.
 # Ad-hoc signatures change on every rebuild, and macOS treats a changed signature
