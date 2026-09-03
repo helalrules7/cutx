@@ -8,6 +8,7 @@ public final class Preferences {
         static let launchAtLogin = "launchAtLogin"
         static let cutSound = "cutSound"
         static let volume = "volume"
+        static let language = "language"
     }
 
     private let defaults: UserDefaults
@@ -21,6 +22,7 @@ public final class Preferences {
             Key.launchAtLogin: false,
             Key.cutSound: CutSound.fallback,
             Key.volume: 0.7,
+            Key.language: Language.automatic.rawValue,
         ])
     }
 
@@ -59,6 +61,16 @@ public final class Preferences {
     public var volume: Double {
         get { min(1, max(0, defaults.double(forKey: Key.volume))) }
         set { defaults.set(min(1, max(0, newValue)), forKey: Key.volume) }
+    }
+
+    /// Reads back the default rather than a stored code we do not ship, so a
+    /// value left by another build cannot select a language that does not exist.
+    public var language: Language {
+        get {
+            let stored = defaults.string(forKey: Key.language) ?? ""
+            return Language(rawValue: stored) ?? .automatic
+        }
+        set { defaults.set(newValue.rawValue, forKey: Key.language) }
     }
 }
 

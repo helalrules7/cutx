@@ -2,13 +2,6 @@ import Foundation
 import Testing
 @testable import CutXCore
 
-private func freshDefaults() -> UserDefaults {
-    let name = "CutXTests-\(UUID().uuidString)"
-    let defaults = UserDefaults(suiteName: name)!
-    defaults.removePersistentDomain(forName: name)
-    return defaults
-}
-
 @Test func defaultsMatchSpec() {
     let prefs = Preferences(defaults: freshDefaults())
     #expect(prefs.playSound == true)
