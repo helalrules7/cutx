@@ -37,6 +37,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         monitor.onPaste = { [weak self] in self?.performPaste() }
         _ = monitor.start()
         self.monitor = monitor
+
+        preferences.launchAtLogin = LaunchAtLogin.isEnabled
     }
 
     // MARK: - Context
