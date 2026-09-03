@@ -158,4 +158,6 @@ MIT — see [LICENSE](LICENSE). Bundled sound credits are in
 [ATTRIBUTIONS.md](ATTRIBUTIONS.md); translation credits and status are in
 [TRANSLATIONS.md](TRANSLATIONS.md).
 
+CutX collects nothing — see [PRIVACY.md](PRIVACY.md).
+
 Made by [Ahmed Helal](https://github.com/helalrules7).
