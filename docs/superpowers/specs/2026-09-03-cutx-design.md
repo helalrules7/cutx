@@ -150,68 +150,90 @@ precondition of the paste path rather than an added guard.
 
 ## User Interface
 
-Menu-bar menu:
+CutX still launches with no window and no Dock icon — it is a menu-bar agent. But
+everything it can be configured with lives in one real window, not in the menu.
+
+### Menu-bar item
+
+Left-click opens the main window. Right-click gives a short menu:
 
 ```
 ✂︎ 3 items cut
-   Report.pdf, Screenshots, invoice-2024.xlsx
    Clear
-───────────────────────────────
-✓ Play sound
-   Cut sound                                ▸
-✓ Show cut indicator
-✓ Also use ⌃X
-✓ Launch at login
-───────────────────────────────
-   Buy me a coffee  ☕
-   About CutX
-   Quit CutX                                  ⌘Q
+───────────────
+   Open CutX
+   Quit CutX          ⌘Q
 ```
 
-The "Clear" item is a menu action only; it is not a global shortcut.
+The icon is an open pair of scissors when idle, a closed pair with a count beside
+it when something is cut.
 
-No separate preferences window for the four toggles — they live in the menu itself.
-There is one window, the **Setup window**, reachable at any time from a "Setup and
-Permissions…" menu item, and shown automatically on first run and whenever a
-permission is missing.
+### Main window
 
-The Setup window is not a static explainer. It contains:
+Three tabs in a toolbar, the standard macOS settings shape:
 
-- **A live checklist.** One row per requirement — Accessibility, Automation
-  (Finder) — each showing its real current state, re-checked once a second. A row
-  flips from ✗ to ✓ while the user watches, which is the confirmation that what
-  they just did in System Settings actually worked.
-- **An animated walkthrough.** A looping, drawn-in-code mock of the System Settings
-  pane with a cursor that moves to the CutX row and flips the toggle on. Written
-  instructions describing where to click are far harder to follow than watching it
-  happen once.
-- **A button per row** that opens the exact System Settings pane for that
-  permission.
+**General**
+- A status banner: "CutX is active" in green, or "Setup needed — CutX is not
+  active" in orange.
+- When a permission is missing: the live permission checklist and the animated
+  walkthrough (below).
+- `Also use ⌃X`
+- `Show cut indicator`
+- `Launch at login`
 
-This exists because of a real failure observed during development: with
-Accessibility revoked, CutX did nothing at all and gave no indication why. A
-permission-gated utility that fails silently is indistinguishable from a broken
-one, and a user will delete it rather than hunt for a toggle. Permission state must
-be visible, not inferred from behavior.
+**Sounds**
+- `Play sound` master switch.
+- A volume slider.
+- A list of the six cut sounds, each row with a ▶ button that plays it. Selecting a
+  row picks it. A list with per-row preview is the right shape for something chosen
+  by ear — a menu of names tells the user nothing.
 
-Buy Me a Coffee link: `https://buymeacoffee.com/ahmedhelal` (suggested tier: $3).
+**About**
+- Version, a one-paragraph explanation of how CutX works, the Buy Me a Coffee link,
+  the GitHub link, and the license.
 
-Sounds: seven short audio files bundled with the app — six selectable cut sounds
-and one paste sound. "Play sound" controls whether any sound plays at all; a
-"Cut sound" submenu picks which one, and selecting an entry previews it
-immediately so the user can compare without leaving the menu.
+### The permission checklist and walkthrough
 
-The six cut sounds are `snip` (default) and `tick`, both synthesized, plus
-`scissors`, `paper`, `knife`, and `bush`, trimmed from royalty-free Pixabay
-recordings. Every sound is at most 130 ms and normalized to a common peak: a UI
-sound must finish before the user's fingers leave the keys, and no option may be
-noticeably louder than another. `scripts/make-sounds.py` regenerates all of them.
-Credits are in `ATTRIBUTIONS.md`.
+This is not a static explainer. It shows the permissions' **real state, live**,
+re-checked once a second, so a row flips from ✗ to ✓ while the user watches — the
+only convincing proof that what they did in System Settings worked. Alongside it, a
+looping, drawn-in-code mock of the System Settings pane shows a cursor moving to the
+CutX row and flipping the toggle on.
 
-The paste sound is fixed, and lower in pitch than any cut sound, so the ear reads
-it as "landed" rather than "lifted".
+Each row has a button that opens the exact System Settings pane for that permission.
 
-Launch at login: `SMAppService.mainApp`.
+This exists because of a real failure during development: with Accessibility
+revoked, CutX did nothing at all and gave no indication why. A permission-gated
+utility that fails silently is indistinguishable from a broken one, and a user will
+delete it rather than hunt for a toggle. Permission state must be visible, not
+inferred from behavior.
+
+### Sounds
+
+Seven short audio files ship with the app — six selectable cut sounds and one paste
+sound. The six are `snip` (default) and `tick`, both synthesized, plus `scissors`,
+`paper`, `knife`, and `bush`, trimmed from royalty-free Pixabay recordings.
+
+Every sound is at most 130 ms and normalized to a common peak: a UI sound must
+finish before the user's fingers leave the keys, and no option may be noticeably
+louder than another. `scripts/make-sounds.py` regenerates all of them. Credits are
+in `ATTRIBUTIONS.md`.
+
+The paste sound is fixed, and lower in pitch than any cut sound, so the ear reads it
+as "landed" rather than "lifted".
+
+### Icons
+
+The app icon is a white pair of scissors on a rounded blue gradient tile.
+
+Both menu-bar icons are drawn in code as template images, so macOS tints them
+correctly in light and dark menu bars. SF Symbols has no closed-scissors glyph, and
+drawing both shapes ourselves also keeps the open and closed states visually
+consistent with each other.
+
+### Launch at login
+
+`SMAppService.mainApp`.
 
 ## Error Handling
 
