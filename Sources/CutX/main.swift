@@ -5,6 +5,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private let preferences = Preferences()
     private var menuBar: MenuBarController?
     private lazy var sounds = SoundPlayer(preferences: preferences)
+    private lazy var hud = CutHUD(preferences: preferences)
     private var monitor: HotkeyMonitor?
 
     private var state = CutState()
@@ -111,6 +112,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             )
             self.menuBar?.update(names: self.state.displayNames)
             self.sounds.playCut()
+            self.hud.show(count: urls.count)
         }
     }
 
