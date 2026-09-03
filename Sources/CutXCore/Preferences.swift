@@ -7,6 +7,7 @@ public final class Preferences {
         static let controlHotkeys = "controlHotkeys"
         static let launchAtLogin = "launchAtLogin"
         static let cutSound = "cutSound"
+        static let volume = "volume"
     }
 
     private let defaults: UserDefaults
@@ -19,6 +20,7 @@ public final class Preferences {
             Key.controlHotkeys: false,
             Key.launchAtLogin: false,
             Key.cutSound: CutSound.fallback,
+            Key.volume: 0.7,
         ])
     }
 
@@ -50,6 +52,13 @@ public final class Preferences {
             return CutSound.all.contains { $0.id == stored } ? stored : CutSound.fallback
         }
         set { defaults.set(newValue, forKey: Key.cutSound) }
+    }
+
+    /// Clamped on both read and write: a value outside 0...1 would make the app
+    /// silent or crash NSSound, and a plist is user-editable.
+    public var volume: Double {
+        get { min(1, max(0, defaults.double(forKey: Key.volume))) }
+        set { defaults.set(min(1, max(0, newValue)), forKey: Key.volume) }
     }
 }
 

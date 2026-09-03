@@ -47,6 +47,7 @@ final class SoundPlayer {
 
     private func play(_ sound: NSSound?) {
         guard let sound else { return }
+        sound.volume = Float(preferences.volume)
         // Cutting twice in quick succession should retrigger, not overlap.
         if sound.isPlaying { sound.stop() }
         sound.play()
