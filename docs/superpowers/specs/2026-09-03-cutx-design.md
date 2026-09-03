@@ -148,7 +148,7 @@ Menu-bar menu:
 ```
 ✂︎ 3 items cut
    Report.pdf, Screenshots, invoice-2024.xlsx
-   Clear                                    ⇧⌘X
+   Clear
 ───────────────────────────────
 ✓ Play sound
 ✓ Show cut indicator
@@ -159,6 +159,8 @@ Menu-bar menu:
    About CutX
    Quit CutX                                  ⌘Q
 ```
+
+The "Clear" item is a menu action only; it is not a global shortcut.
 
 No separate preferences window. The only window is a first-run onboarding screen
 explaining the two required permissions, with a button that opens the exact System
