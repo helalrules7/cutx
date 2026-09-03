@@ -16,6 +16,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var selectionQueryInFlight = false
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        // Resolved before anything is built: every label reads from it.
+        L10n.resolve(preferences.language)
+
         let menuBar = MenuBarController()
         menuBar.onClear = { [weak self] in self?.clearCut() }
         menuBar.onOpenWindow = { [weak self] in self?.mainWindow.show() }

@@ -30,18 +30,21 @@ final class MainWindow: NSObject, NSWindowDelegate {
         tabs.tabViewType = .topTabsBezelBorder
 
         let general = GeneralTabView(preferences: preferences)
+        general.onLanguageChanged = { [weak self] in self?.rebuildForNewLanguage() }
         self.general = general
 
-        for (label, view) in [
-            ("General", general as NSView),
-            ("Sounds", SoundsTabView(preferences: preferences, player: player)),
-            ("About", AboutTabView()),
+        for (key, view) in [
+            ("tab.general", general as NSView),
+            ("tab.sounds", SoundsTabView(preferences: preferences, player: player)),
+            ("tab.about", AboutTabView()),
         ] {
-            let item = NSTabViewItem(identifier: label)
-            item.label = label
+            let item = NSTabViewItem(identifier: key)
+            item.label = T(key)
             item.view = view
             tabs.addTabViewItem(item)
         }
+
+        L10n.applyDirection(to: tabs)
 
         let window = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 460, height: 432),
@@ -49,17 +52,37 @@ final class MainWindow: NSObject, NSWindowDelegate {
             backing: .buffered,
             defer: false
         )
-        window.title = "CutX"
+        window.title = T("window.title")
         window.center()
         window.isReleasedWhenClosed = false
         window.delegate = self
         window.contentView = tabs
+        if let content = window.contentView { L10n.applyDirection(to: content) }
         window.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
         self.window = window
 
         general.startAnimating()
         startRefreshing()
+    }
+
+    /// Rebuilding beats walking the tree re-setting every string, and at this size
+    /// it is instant.
+    private func rebuildForNewLanguage() {
+        L10n.resolve(preferences.language)
+
+        refreshTimer?.invalidate()
+        refreshTimer = nil
+        general?.stopAnimating()
+        general = nil
+
+        if let window {
+            window.delegate = nil
+            window.orderOut(nil)
+        }
+        window = nil
+
+        show()
     }
 
     /// Permission state is polled rather than observed: macOS sends no notification

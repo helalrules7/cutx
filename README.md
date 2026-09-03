@@ -9,7 +9,7 @@
 Press <kbd>⌘X</kbd> on a file or folder, then <kbd>⌘V</kbd> where you want it.
 The items move — they are removed from the original location, exactly like Windows.
 
-Free, open source, no ads, no tracking.
+Free, open source, no ads, no tracking. Speaks eleven languages.
 
 [Download](https://github.com/helalrules7/cutx/releases) ·
 [Buy me a coffee ☕](https://buymeacoffee.com/ahmedhelal)
@@ -48,6 +48,9 @@ exactly as they normally do — because it really is Finder doing the work.
 Outside Finder, CutX is invisible. <kbd>⌘X</kbd> in your editor cuts text, as
 always. That guarantee is the most heavily tested part of the codebase.
 
+CutX reads the physical key, not the character on it, so it works on any keyboard
+layout — Arabic, AZERTY, QWERTZ. Press wherever X lives on your keyboard.
+
 ## Install
 
 1. Download `CutX.zip` from [Releases](https://github.com/helalrules7/cutx/releases).
@@ -71,16 +74,36 @@ Left-click the scissors in the menu bar to open the window.
 
 <div align="center">
 
-<img src="screenshots/general.png" width="300" alt="General tab">
-<img src="screenshots/sounds.png" width="300" alt="Sounds tab">
+<img src="screenshots/general.png" width="290" alt="General tab">
+<img src="screenshots/sounds.png" width="290" alt="Sounds tab">
 
-<img src="screenshots/about.png" width="300" alt="About tab">
-<img src="screenshots/menu.png" width="280" alt="Right-click menu showing 4 items cut, Clear, Open CutX, Buy me a coffee, and Quit">
+<img src="screenshots/about.png" width="290" alt="About tab">
+<img src="screenshots/menu.png" width="270" alt="Right-click menu showing 4 items cut, Clear, Open CutX, Buy me a coffee, and Quit">
 
 </div>
 
 Right-click the icon for a short menu: what's currently cut, Clear, Open, Buy me a
 coffee, and Quit.
+
+## Languages
+
+CutX speaks **English, العربية, Español, Français, Deutsch, Português (BR),
+Русский, 中文 (简体), 日本語, Türkçe** and **Italiano**. It follows your Mac's
+language by default, and you can override it in the General tab.
+
+<div align="center">
+
+<img src="screenshots/languages.png" width="290" alt="The language picker listing eleven languages, each named in its own script">
+<img src="screenshots/arabic.png" width="290" alt="The General tab in Arabic, fully mirrored right to left">
+
+<sub>Arabic is genuinely mirrored — checkboxes, columns and tabs all flip.</sub>
+
+</div>
+
+English and Arabic were written by the author. The other nine are
+machine-translated and **have not been reviewed by a native speaker** — corrections
+are very welcome, and take one line. See
+[TRANSLATIONS.md](TRANSLATIONS.md).
 
 ## What it does not do
 
@@ -132,6 +155,7 @@ CutX is free and always will be. If it saves you some clicks:
 ## License
 
 MIT — see [LICENSE](LICENSE). Bundled sound credits are in
-[ATTRIBUTIONS.md](ATTRIBUTIONS.md).
+[ATTRIBUTIONS.md](ATTRIBUTIONS.md); translation credits and status are in
+[TRANSLATIONS.md](TRANSLATIONS.md).
 
 Made by [Ahmed Helal](https://github.com/helalrules7).

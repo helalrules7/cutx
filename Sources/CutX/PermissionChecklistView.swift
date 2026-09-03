@@ -12,10 +12,11 @@ final class PermissionChecklistView: NSView {
 
     private var rows: [Row] = []
     private let onOpenSettings: (Permission) -> Void
+    private let column = NSStackView()
 
     init(onOpenSettings: @escaping (Permission) -> Void) {
         self.onOpenSettings = onOpenSettings
-        super.init(frame: NSRect(x: 0, y: 0, width: 420, height: 118))
+        super.init(frame: .zero)
         buildRows()
         refresh()
     }
@@ -24,33 +25,65 @@ final class PermissionChecklistView: NSView {
     required init?(coder: NSCoder) { fatalError("not used") }
 
     private func buildRows() {
-        var y = frame.height - 46
+        column.translatesAutoresizingMaskIntoConstraints = false
+        column.orientation = .vertical
+        column.alignment = .leading
+        column.spacing = 16
+        addSubview(column)
+        NSLayoutConstraint.activate([
+            column.leadingAnchor.constraint(equalTo: leadingAnchor),
+            column.trailingAnchor.constraint(equalTo: trailingAnchor),
+            column.topAnchor.constraint(equalTo: topAnchor),
+            column.bottomAnchor.constraint(equalTo: bottomAnchor),
+        ])
+
         for (index, permission) in Permission.allCases.enumerated() {
             let mark = NSTextField(labelWithString: "○")
             mark.font = .systemFont(ofSize: 15, weight: .bold)
-            mark.frame = NSRect(x: 0, y: y + 14, width: 22, height: 20)
-            addSubview(mark)
+            mark.alignment = .natural
+            mark.translatesAutoresizingMaskIntoConstraints = false
+            mark.setContentHuggingPriority(.required, for: .horizontal)
 
             let title = NSTextField(labelWithString: permission.title)
             title.font = .systemFont(ofSize: 13, weight: .semibold)
-            title.frame = NSRect(x: 22, y: y + 14, width: 240, height: 20)
-            addSubview(title)
+            title.alignment = .natural
+            title.translatesAutoresizingMaskIntoConstraints = false
 
             let detail = NSTextField(wrappingLabelWithString: permission.detail)
             detail.font = .systemFont(ofSize: 11)
             detail.textColor = .secondaryLabelColor
-            detail.frame = NSRect(x: 22, y: y - 4, width: 310, height: 16)
-            addSubview(detail)
+            detail.alignment = .natural
+            detail.translatesAutoresizingMaskIntoConstraints = false
+            detail.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
 
-            let button = NSButton(title: "Open", target: self, action: #selector(openTapped(_:)))
+            let text = NSStackView(views: [title, detail])
+            text.translatesAutoresizingMaskIntoConstraints = false
+            text.orientation = .vertical
+            text.alignment = .leading
+            text.spacing = 2
+
+            let button = NSButton(title: T("permission.open"), target: self, action: #selector(openTapped(_:)))
             button.bezelStyle = .rounded
             button.controlSize = .small
             button.tag = index
-            button.frame = NSRect(x: 344, y: y + 12, width: 74, height: 24)
-            addSubview(button)
+            button.translatesAutoresizingMaskIntoConstraints = false
+            button.setContentHuggingPriority(.required, for: .horizontal)
+            button.setContentCompressionResistancePriority(.required, for: .horizontal)
+
+            let row = NSStackView(views: [mark, text, button])
+            row.translatesAutoresizingMaskIntoConstraints = false
+            row.orientation = .horizontal
+            row.alignment = .top
+            row.spacing = 8
+            row.setHuggingPriority(.defaultLow, for: .horizontal)
+
+            column.addArrangedSubview(row)
+            NSLayoutConstraint.activate([
+                row.leadingAnchor.constraint(equalTo: column.leadingAnchor),
+                row.trailingAnchor.constraint(equalTo: column.trailingAnchor),
+            ])
 
             rows.append(Row(permission: permission, mark: mark, button: button))
-            y -= 56
         }
     }
 

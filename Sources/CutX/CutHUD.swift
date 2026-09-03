@@ -20,8 +20,8 @@ final class CutHUD {
         dismissWorkItem?.cancel()
         panel?.orderOut(nil)
 
-        let noun = count == 1 ? "item" : "items"
-        let label = NSTextField(labelWithString: "✂︎  \(count) \(noun) cut")
+        let key = count == 1 ? "hud.itemCut" : "hud.itemsCut"
+        let label = NSTextField(labelWithString: "✂︎  " + String(format: T(key), count))
         label.font = .systemFont(ofSize: 13, weight: .medium)
         label.textColor = .labelColor
         label.sizeToFit()

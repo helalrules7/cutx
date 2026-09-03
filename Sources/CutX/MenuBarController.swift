@@ -51,12 +51,16 @@ final class MenuBarController {
         let menu = NSMenu()
 
         if names.isEmpty {
-            let idle = NSMenuItem(title: "Nothing cut", action: nil, keyEquivalent: "")
+            let idle = NSMenuItem(title: T("menu.nothingCut"), action: nil, keyEquivalent: "")
             idle.isEnabled = false
             menu.addItem(idle)
         } else {
-            let noun = names.count == 1 ? "item" : "items"
-            let header = NSMenuItem(title: "\(names.count) \(noun) cut", action: nil, keyEquivalent: "")
+            let key = names.count == 1 ? "menu.itemCut" : "menu.itemsCut"
+            let header = NSMenuItem(
+                title: String(format: T(key), names.count),
+                action: nil,
+                keyEquivalent: ""
+            )
             header.isEnabled = false
             menu.addItem(header)
 
@@ -68,14 +72,14 @@ final class MenuBarController {
             preview.isEnabled = false
             menu.addItem(preview)
 
-            menu.addItem(item("Clear", #selector(clearTapped)))
+            menu.addItem(item(T("menu.clear"), #selector(clearTapped)))
         }
 
         menu.addItem(.separator())
-        menu.addItem(item("Open CutX", #selector(openTapped)))
-        menu.addItem(item("Buy me a coffee  ☕", #selector(coffeeTapped)))
+        menu.addItem(item(T("menu.open"), #selector(openTapped)))
+        menu.addItem(item("\(T("menu.coffee"))  ☕", #selector(coffeeTapped)))
         menu.addItem(NSMenuItem(
-            title: "Quit CutX",
+            title: T("menu.quit"),
             action: #selector(NSApplication.terminate(_:)),
             keyEquivalent: "q"
         ))

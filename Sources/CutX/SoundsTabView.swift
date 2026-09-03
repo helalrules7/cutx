@@ -9,7 +9,7 @@ final class SoundsTabView: NSView {
     private var radios: [NSButton] = []
     private var previewButtons: [NSButton] = []
     private let volumeSlider = NSSlider()
-    private let volumeLabel = NSTextField(labelWithString: "Volume")
+    private let volumeLabel = NSTextField(labelWithString: "")
 
     init(preferences: Preferences, player: SoundPlayer) {
         self.preferences = preferences
@@ -22,57 +22,100 @@ final class SoundsTabView: NSView {
     required init?(coder: NSCoder) { fatalError("not used") }
 
     private func build() {
+        L10n.applyDirection(to: self)
+
         let master = NSButton(
-            checkboxWithTitle: "Play sound",
+            checkboxWithTitle: T("sounds.play"),
             target: self,
             action: #selector(togglePlaySound(_:))
         )
         master.state = preferences.playSound ? .on : .off
-        master.frame = NSRect(x: 30, y: 352, width: 300, height: 22)
-        addSubview(master)
+        master.translatesAutoresizingMaskIntoConstraints = false
 
+        volumeLabel.stringValue = T("sounds.volume")
         volumeLabel.font = .systemFont(ofSize: 12)
         volumeLabel.textColor = .secondaryLabelColor
-        volumeLabel.frame = NSRect(x: 50, y: 320, width: 60, height: 18)
-        addSubview(volumeLabel)
+        volumeLabel.alignment = .natural
+        volumeLabel.translatesAutoresizingMaskIntoConstraints = false
+        volumeLabel.setContentHuggingPriority(.required, for: .horizontal)
 
         volumeSlider.minValue = 0
         volumeSlider.maxValue = 1
         volumeSlider.doubleValue = preferences.volume
         volumeSlider.target = self
         volumeSlider.action = #selector(volumeChanged(_:))
-        volumeSlider.frame = NSRect(x: 112, y: 318, width: 220, height: 22)
-        addSubview(volumeSlider)
+        volumeSlider.translatesAutoresizingMaskIntoConstraints = false
 
-        let heading = NSTextField(labelWithString: "CUT SOUND")
+        let volumeRow = NSStackView(views: [volumeLabel, volumeSlider])
+        volumeRow.translatesAutoresizingMaskIntoConstraints = false
+        volumeRow.orientation = .horizontal
+        volumeRow.alignment = .centerY
+        volumeRow.spacing = 10
+
+        let heading = NSTextField(labelWithString: T("sounds.cutSound"))
         heading.font = .systemFont(ofSize: 10, weight: .semibold)
         heading.textColor = .tertiaryLabelColor
-        heading.frame = NSRect(x: 30, y: 286, width: 200, height: 14)
-        addSubview(heading)
+        heading.alignment = .natural
+        heading.translatesAutoresizingMaskIntoConstraints = false
 
-        var y: CGFloat = 254
+        let soundList = NSStackView()
+        soundList.translatesAutoresizingMaskIntoConstraints = false
+        soundList.orientation = .vertical
+        soundList.alignment = .leading
+        soundList.spacing = 8
+
         for (index, sound) in CutSound.all.enumerated() {
             let radio = NSButton(
-                radioButtonWithTitle: sound.label,
+                radioButtonWithTitle: T("sound.\(sound.id)"),
                 target: self,
                 action: #selector(selectSound(_:))
             )
             radio.tag = index
             radio.state = sound.id == preferences.cutSound ? .on : .off
-            radio.frame = NSRect(x: 50, y: y, width: 240, height: 22)
-            addSubview(radio)
+            radio.translatesAutoresizingMaskIntoConstraints = false
             radios.append(radio)
 
             let preview = NSButton(title: "▶", target: self, action: #selector(previewSound(_:)))
             preview.bezelStyle = .rounded
             preview.controlSize = .small
             preview.tag = index
-            preview.frame = NSRect(x: 300, y: y - 1, width: 40, height: 24)
-            addSubview(preview)
+            preview.translatesAutoresizingMaskIntoConstraints = false
+            preview.setContentHuggingPriority(.required, for: .horizontal)
             previewButtons.append(preview)
 
-            y -= 30
+            let row = NSStackView(views: [radio, preview])
+            row.translatesAutoresizingMaskIntoConstraints = false
+            row.orientation = .horizontal
+            row.alignment = .centerY
+            row.spacing = 12
+            soundList.addArrangedSubview(row)
+            NSLayoutConstraint.activate([
+                row.leadingAnchor.constraint(equalTo: soundList.leadingAnchor),
+                row.trailingAnchor.constraint(lessThanOrEqualTo: soundList.trailingAnchor),
+            ])
         }
+
+        let column = NSStackView(views: [master, volumeRow, heading, soundList])
+        column.translatesAutoresizingMaskIntoConstraints = false
+        column.orientation = .vertical
+        column.alignment = .leading
+        column.spacing = 16
+        column.setCustomSpacing(24, after: volumeRow)
+        addSubview(column)
+
+        NSLayoutConstraint.activate([
+            column.topAnchor.constraint(equalTo: topAnchor, constant: 26),
+            column.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 30),
+            column.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -30),
+            column.bottomAnchor.constraint(lessThanOrEqualTo: bottomAnchor, constant: -20),
+            master.leadingAnchor.constraint(equalTo: column.leadingAnchor),
+            volumeRow.leadingAnchor.constraint(equalTo: column.leadingAnchor, constant: 20),
+            volumeRow.trailingAnchor.constraint(lessThanOrEqualTo: column.trailingAnchor),
+            volumeSlider.widthAnchor.constraint(greaterThanOrEqualToConstant: 200),
+            heading.leadingAnchor.constraint(equalTo: column.leadingAnchor),
+            soundList.leadingAnchor.constraint(equalTo: column.leadingAnchor, constant: 20),
+            soundList.trailingAnchor.constraint(lessThanOrEqualTo: column.trailingAnchor),
+        ])
 
         updateEnabledState()
     }

@@ -5,14 +5,27 @@ final class GeneralTabView: NSView {
     private let preferences: Preferences
     private let banner = NSTextField(labelWithString: "")
     private let checklist: PermissionChecklistView
+    /// Constructed with an explicit size because its CALayers are laid out from
+    /// `bounds` at init time; the size is pinned again below with constraints.
     private let animation = SettingsAnimationView(
-        frame: NSRect(x: 30, y: 24, width: 400, height: 128)
+        frame: NSRect(x: 0, y: 0, width: 400, height: 128)
     )
-    private let hint = NSTextField(labelWithString: "Find CutX in the list and switch it on:")
+    private let hint = NSTextField(labelWithString: "")
     private var toggles: [(NSButton, () -> Bool)] = []
     private var referenceViews: [NSView] = []
     /// The two key labels that gain a "(⌃X)" alternative when that setting is on.
     private var referenceKeyLabels: [(field: NSTextField, primary: String, alternate: String)] = []
+
+    /// The permission block and the settings block trade places: a healthy install
+    /// shows settings rather than a wall of ✓.
+    private let permissionBlock = NSStackView()
+    private let settingsBlock = NSStackView()
+    private let referenceBlock = NSStackView()
+    private let languageRow = NSStackView()
+    private let languagePopUp = NSPopUpButton()
+
+    /// Called when the user picks a different language. `MainWindow` rebuilds.
+    var onLanguageChanged: () -> Void = {}
 
     init(preferences: Preferences) {
         self.preferences = preferences
@@ -31,32 +44,86 @@ final class GeneralTabView: NSView {
     required init?(coder: NSCoder) { fatalError("not used") }
 
     private func build() {
+        L10n.applyDirection(to: self)
+
         banner.font = .systemFont(ofSize: 14, weight: .semibold)
-        banner.frame = NSRect(x: 30, y: 356, width: 400, height: 22)
-        addSubview(banner)
+        banner.alignment = .natural
+        banner.translatesAutoresizingMaskIntoConstraints = false
 
-        checklist.frame = NSRect(x: 30, y: 224, width: 420, height: 118)
-        addSubview(checklist)
+        buildPermissionBlock()
+        buildSettingsBlock()
+        buildLanguageRow()
+        buildQuickReference()
 
+        let column = NSStackView(
+            views: [banner, permissionBlock, settingsBlock, languageRow, referenceBlock]
+        )
+        column.translatesAutoresizingMaskIntoConstraints = false
+        column.orientation = .vertical
+        column.alignment = .leading
+        column.spacing = 16
+        addSubview(column)
+
+        NSLayoutConstraint.activate([
+            column.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 30),
+            column.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -30),
+            column.topAnchor.constraint(equalTo: topAnchor, constant: 22),
+            column.bottomAnchor.constraint(lessThanOrEqualTo: bottomAnchor, constant: -20),
+            banner.leadingAnchor.constraint(equalTo: column.leadingAnchor),
+            banner.trailingAnchor.constraint(lessThanOrEqualTo: column.trailingAnchor),
+            permissionBlock.leadingAnchor.constraint(equalTo: column.leadingAnchor),
+            permissionBlock.trailingAnchor.constraint(equalTo: column.trailingAnchor),
+            settingsBlock.leadingAnchor.constraint(equalTo: column.leadingAnchor),
+            settingsBlock.trailingAnchor.constraint(equalTo: column.trailingAnchor),
+            languageRow.leadingAnchor.constraint(equalTo: column.leadingAnchor),
+            languageRow.trailingAnchor.constraint(lessThanOrEqualTo: column.trailingAnchor),
+            referenceBlock.leadingAnchor.constraint(equalTo: column.leadingAnchor),
+            referenceBlock.trailingAnchor.constraint(equalTo: column.trailingAnchor),
+        ])
+    }
+
+    private func buildPermissionBlock() {
+        checklist.translatesAutoresizingMaskIntoConstraints = false
+
+        hint.stringValue = T("permission.hint")
         hint.font = .systemFont(ofSize: 11)
         hint.textColor = .secondaryLabelColor
-        hint.frame = NSRect(x: 30, y: 200, width: 400, height: 16)
-        addSubview(hint)
+        hint.alignment = .natural
+        hint.translatesAutoresizingMaskIntoConstraints = false
 
-        addSubview(animation)
+        animation.translatesAutoresizingMaskIntoConstraints = false
 
-        // The behavior toggles sit where the permission block is when everything is
-        // granted, so a healthy install shows settings rather than a wall of ✓.
-        var y: CGFloat = 300
-        addToggle("Also use ⌃X", y: y,
+        permissionBlock.translatesAutoresizingMaskIntoConstraints = false
+        permissionBlock.orientation = .vertical
+        permissionBlock.alignment = .leading
+        permissionBlock.spacing = 10
+        permissionBlock.addArrangedSubview(checklist)
+        permissionBlock.addArrangedSubview(hint)
+        permissionBlock.addArrangedSubview(animation)
+
+        NSLayoutConstraint.activate([
+            checklist.leadingAnchor.constraint(equalTo: permissionBlock.leadingAnchor),
+            checklist.trailingAnchor.constraint(equalTo: permissionBlock.trailingAnchor),
+            hint.leadingAnchor.constraint(equalTo: permissionBlock.leadingAnchor),
+            animation.leadingAnchor.constraint(equalTo: permissionBlock.leadingAnchor),
+            animation.widthAnchor.constraint(equalToConstant: 400),
+            animation.heightAnchor.constraint(equalToConstant: 128),
+        ])
+    }
+
+    private func buildSettingsBlock() {
+        settingsBlock.translatesAutoresizingMaskIntoConstraints = false
+        settingsBlock.orientation = .vertical
+        settingsBlock.alignment = .leading
+        settingsBlock.spacing = 8
+
+        addToggle(T("general.alsoUseControl"),
                   get: { [weak self] in self?.preferences.controlHotkeys ?? false },
                   set: { [weak self] in self?.preferences.controlHotkeys = $0 })
-        y -= 30
-        addToggle("Show cut indicator", y: y,
+        addToggle(T("general.showIndicator"),
                   get: { [weak self] in self?.preferences.showIndicator ?? false },
                   set: { [weak self] in self?.preferences.showIndicator = $0 })
-        y -= 30
-        addToggle("Launch at login", y: y,
+        addToggle(T("general.launchAtLogin"),
                   get: { LaunchAtLogin.isEnabled },
                   set: { [weak self] wanted in
                       // Only record it if the system accepted, so the checkbox never
@@ -65,42 +132,84 @@ final class GeneralTabView: NSView {
                           self?.preferences.launchAtLogin = wanted
                       }
                   })
+    }
 
-        buildQuickReference(below: y - 24)
+    private func buildLanguageRow() {
+        let label = NSTextField(labelWithString: T("general.language"))
+        label.font = .systemFont(ofSize: 12)
+        label.alignment = .natural
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.setContentHuggingPriority(.required, for: .horizontal)
+
+        languagePopUp.translatesAutoresizingMaskIntoConstraints = false
+        languagePopUp.removeAllItems()
+        languagePopUp.addItems(withTitles: Language.allCases.map(\.nativeName))
+        if let index = Language.allCases.firstIndex(of: preferences.language) {
+            languagePopUp.selectItem(at: index)
+        }
+        languagePopUp.target = self
+        languagePopUp.action = #selector(languageChanged(_:))
+
+        languageRow.translatesAutoresizingMaskIntoConstraints = false
+        languageRow.orientation = .horizontal
+        languageRow.alignment = .centerY
+        languageRow.spacing = 10
+        languageRow.addArrangedSubview(label)
+        languageRow.addArrangedSubview(languagePopUp)
+    }
+
+    @objc private func languageChanged(_ sender: NSPopUpButton) {
+        let languages = Language.allCases
+        guard sender.indexOfSelectedItem < languages.count else { return }
+        preferences.language = languages[sender.indexOfSelectedItem]
+        onLanguageChanged()
     }
 
     /// Fills the space the permission block leaves behind once everything is
     /// granted. The ⌘Z line is the one that matters: most people will not guess
     /// that undo works, and knowing it does is what makes a tool that moves your
     /// files feel safe to try.
-    private func buildQuickReference(below top: CGFloat) {
-        let rule = NSBox(frame: NSRect(x: 30, y: top, width: 400, height: 1))
-        rule.boxType = .separator
-        addSubview(rule)
-        referenceViews.append(rule)
+    private func buildQuickReference() {
+        referenceBlock.translatesAutoresizingMaskIntoConstraints = false
+        referenceBlock.orientation = .vertical
+        referenceBlock.alignment = .leading
+        referenceBlock.spacing = 8
 
-        let heading = NSTextField(labelWithString: "HOW TO USE")
+        let rule = NSBox()
+        rule.boxType = .separator
+        rule.translatesAutoresizingMaskIntoConstraints = false
+        referenceBlock.addArrangedSubview(rule)
+        referenceViews.append(rule)
+        NSLayoutConstraint.activate([
+            rule.leadingAnchor.constraint(equalTo: referenceBlock.leadingAnchor),
+            rule.trailingAnchor.constraint(equalTo: referenceBlock.trailingAnchor),
+        ])
+
+        let heading = NSTextField(labelWithString: T("general.howToUse"))
         heading.font = .systemFont(ofSize: 10, weight: .semibold)
         heading.textColor = .tertiaryLabelColor
-        heading.frame = NSRect(x: 30, y: top - 26, width: 200, height: 14)
-        addSubview(heading)
+        heading.alignment = .natural
+        heading.translatesAutoresizingMaskIntoConstraints = false
+        referenceBlock.addArrangedSubview(heading)
         referenceViews.append(heading)
+        heading.leadingAnchor.constraint(equalTo: referenceBlock.leadingAnchor).isActive = true
 
         let rows = [
-            ("⌘X", "⌃X", "Cut the selected files in Finder"),
-            ("⌘V", "⌃V", "Move them here"),
-            ("⌘Z", "", "Undo — it's Finder's own undo"),
+            ("⌘X", "⌃X", T("general.howTo.cut")),
+            ("⌘V", "⌃V", T("general.howTo.paste")),
+            ("⌘Z", "", T("general.howTo.undo")),
         ]
 
-        var rowY = top - 54
+        var keyFields: [NSTextField] = []
         for (primary, alternate, explanation) in rows {
             let key = NSTextField(labelWithString: primary)
             key.font = .monospacedSystemFont(ofSize: 12, weight: .semibold)
-            // Left-aligned so ⌘X, ⌘V and ⌘Z all start at the same point; right
-            // alignment leaves ⌘Z stranded once the others gain "(⌃X)".
+            // Natural alignment so ⌘X, ⌘V and ⌘Z all start at the same point, in
+            // whichever direction the interface reads.
             key.alignment = .natural
-            key.frame = NSRect(x: 44, y: rowY, width: 84, height: 18)
-            addSubview(key)
+            key.translatesAutoresizingMaskIntoConstraints = false
+            key.setContentHuggingPriority(.defaultLow, for: .horizontal)
+            keyFields.append(key)
             referenceViews.append(key)
             if !alternate.isEmpty {
                 referenceKeyLabels.append((key, primary, alternate))
@@ -109,12 +218,31 @@ final class GeneralTabView: NSView {
             let text = NSTextField(labelWithString: explanation)
             text.font = .systemFont(ofSize: 12)
             text.textColor = .secondaryLabelColor
-            text.frame = NSRect(x: 126, y: rowY, width: 300, height: 18)
-            addSubview(text)
+            text.alignment = .natural
+            text.translatesAutoresizingMaskIntoConstraints = false
             referenceViews.append(text)
 
-            rowY -= 26
+            let row = NSStackView(views: [key, text])
+            row.translatesAutoresizingMaskIntoConstraints = false
+            row.orientation = .horizontal
+            row.alignment = .firstBaseline
+            row.spacing = 12
+            referenceBlock.addArrangedSubview(row)
+            referenceViews.append(row)
+            NSLayoutConstraint.activate([
+                row.leadingAnchor.constraint(equalTo: referenceBlock.leadingAnchor, constant: 14),
+                row.trailingAnchor.constraint(lessThanOrEqualTo: referenceBlock.trailingAnchor),
+            ])
         }
+
+        // The key column stays a single column whatever it currently reads.
+        if let first = keyFields.first {
+            for field in keyFields.dropFirst() {
+                field.widthAnchor.constraint(equalTo: first.widthAnchor).isActive = true
+            }
+            first.widthAnchor.constraint(greaterThanOrEqualToConstant: 84).isActive = true
+        }
+
         updateReferenceKeys()
     }
 
@@ -131,17 +259,20 @@ final class GeneralTabView: NSView {
 
     private func addToggle(
         _ title: String,
-        y: CGFloat,
         get: @escaping () -> Bool,
         set: @escaping (Bool) -> Void
     ) {
         let button = NSButton(checkboxWithTitle: title, target: nil, action: nil)
-        button.frame = NSRect(x: 30, y: y, width: 400, height: 22)
+        button.translatesAutoresizingMaskIntoConstraints = false
         button.state = get() ? .on : .off
         button.target = self
         button.action = #selector(toggleChanged(_:))
         button.tag = toggles.count
-        addSubview(button)
+        settingsBlock.addArrangedSubview(button)
+        NSLayoutConstraint.activate([
+            button.leadingAnchor.constraint(equalTo: settingsBlock.leadingAnchor),
+            button.trailingAnchor.constraint(lessThanOrEqualTo: settingsBlock.trailingAnchor),
+        ])
         toggles.append((button, get))
         toggleSetters.append(set)
     }
@@ -159,15 +290,18 @@ final class GeneralTabView: NSView {
     /// Called once a second while the window is open.
     func refresh() {
         let ready = PermissionsCoordinator.allGranted
-        banner.stringValue = ready ? "✓  CutX is active"
-                                   : "⚠︎  Setup needed — CutX is not active"
+        banner.stringValue = ready ? "✓  \(T("general.active"))"
+                                   : "⚠︎  \(T("general.setupNeeded"))"
         banner.textColor = ready ? .systemGreen : .systemOrange
 
+        permissionBlock.isHidden = ready
         checklist.isHidden = ready
         hint.isHidden = ready
         animation.isHidden = ready
         if ready { animation.stop() } else { checklist.refresh() }
 
+        settingsBlock.isHidden = !ready
+        referenceBlock.isHidden = !ready
         for (button, get) in toggles {
             button.isHidden = !ready
             button.state = get() ? .on : .off

@@ -9,17 +9,17 @@ enum Permission: CaseIterable {
 
     var title: String {
         switch self {
-        case .accessibility: return "Accessibility"
-        case .automation: return "Control Finder"
+        case .accessibility: return T("permission.accessibility")
+        case .automation: return T("permission.automation")
         }
     }
 
     var detail: String {
         switch self {
         case .accessibility:
-            return "Lets CutX see ⌘X and ⌘V. Without this, nothing happens at all."
+            return T("permission.accessibility.detail")
         case .automation:
-            return "Lets CutX ask Finder to move your files. Finder does the moving."
+            return T("permission.automation.detail")
         }
     }
 
