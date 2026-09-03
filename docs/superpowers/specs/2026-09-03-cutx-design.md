@@ -151,6 +151,7 @@ Menu-bar menu:
    Clear
 ───────────────────────────────
 ✓ Play sound
+   Cut sound                                ▸
 ✓ Show cut indicator
 ✓ Also use ⌃X
 ✓ Launch at login
@@ -168,8 +169,20 @@ Settings pane. It stops appearing once both permissions are granted.
 
 Buy Me a Coffee link: `https://buymeacoffee.com/ahmedhelal` (suggested tier: $3).
 
-Sounds: two short audio files bundled with the app, one for cut and one for paste.
-The "Play sound" setting controls both.
+Sounds: seven short audio files bundled with the app — six selectable cut sounds
+and one paste sound. "Play sound" controls whether any sound plays at all; a
+"Cut sound" submenu picks which one, and selecting an entry previews it
+immediately so the user can compare without leaving the menu.
+
+The six cut sounds are `snip` (default) and `tick`, both synthesized, plus
+`scissors`, `paper`, `knife`, and `bush`, trimmed from royalty-free Pixabay
+recordings. Every sound is at most 130 ms and normalized to a common peak: a UI
+sound must finish before the user's fingers leave the keys, and no option may be
+noticeably louder than another. `scripts/make-sounds.py` regenerates all of them.
+Credits are in `ATTRIBUTIONS.md`.
+
+The paste sound is fixed, and lower in pitch than any cut sound, so the ear reads
+it as "landed" rather than "lifted".
 
 Launch at login: `SMAppService.mainApp`.
 
