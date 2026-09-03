@@ -16,6 +16,14 @@ Free, open source, no ads, no tracking.
 
 </div>
 
+<div align="center">
+
+<img src="screenshots/cut-indicator.png" width="620" alt="Four files selected in Finder with a floating indicator reading 4 items cut">
+
+<sub>⌘X on four items. The indicator fades after a moment; the menu-bar count stays until you paste.</sub>
+
+</div>
+
 ---
 
 ## Why
@@ -61,7 +69,18 @@ Left-click the scissors in the menu bar to open the window.
 | **Sounds** | On/off, volume, and six cut sounds with a ▶ on every row |
 | **About** | Version, links, and the coffee button |
 
-Right-click the icon for a short menu: what's currently cut, Clear, Open, and Quit.
+<div align="center">
+
+<img src="screenshots/general.png" width="300" alt="General tab">
+<img src="screenshots/sounds.png" width="300" alt="Sounds tab">
+
+<img src="screenshots/about.png" width="300" alt="About tab">
+<img src="screenshots/menu.png" width="280" alt="Right-click menu showing 4 items cut, Clear, Open CutX, Buy me a coffee, and Quit">
+
+</div>
+
+Right-click the icon for a short menu: what's currently cut, Clear, Open, Buy me a
+coffee, and Quit.
 
 ## What it does not do
 
