@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:ctrl+x-mac}",
+            "name": "Debug CutX",
+            "target": "CutX",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug CutX"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:ctrl+x-mac}",
+            "name": "Release CutX",
+            "target": "CutX",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release CutX"
+        }
+    ]
+}
