@@ -2,15 +2,25 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+    <!-- Required by the App Store; must match the provisioning profile exactly. -->
+    <key>com.apple.application-identifier</key>
+    <string>T958VWM76Z.com.helalrules.CutX</string>
+    <key>com.apple.developer.team-identifier</key>
+    <string>T958VWM76Z</string>
+
+    <!-- App Sandbox is mandatory for the store. Verified to still permit the
+         CGEventTap once the user grants Accessibility. -->
     <key>com.apple.security.app-sandbox</key>
     <true/>
+
+    <!-- CutX asks Finder which files are selected, and asks Finder to move them.
+         The temporary exception names Finder specifically rather than allowing
+         Apple Events to anything. -->
     <key>com.apple.security.automation.apple-events</key>
     <true/>
     <key>com.apple.security.temporary-exception.apple-events</key>
     <array>
         <string>com.apple.finder</string>
     </array>
-    <key>com.apple.security.files.user-selected.read-write</key>
-    <true/>
 </dict>
 </plist>
