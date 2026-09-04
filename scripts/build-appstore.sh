@@ -40,6 +40,13 @@ PKG_IDENTITY="$(security find-identity -v 2>/dev/null \
 echo "==> Embedding the provisioning profile"
 cp "$PROFILE" "$APP/Contents/embedded.provisionprofile"
 
+# A profile downloaded through a browser carries com.apple.quarantine, and the
+# attribute travels with the copy. The App Store rejects any bundle containing it
+# (error 91109), so strip extended attributes from the whole app before signing —
+# signing after this point is what makes the cleaned bundle valid.
+echo "==> Stripping extended attributes"
+xattr -cr "$APP"
+
 echo "==> Signing sandboxed with $APP_IDENTITY"
 codesign --force --deep --timestamp \
     --sign "$APP_IDENTITY" \
