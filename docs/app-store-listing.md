@@ -73,6 +73,24 @@ CutX does not dim the cut files inside the Finder window the way Windows does �
 It works in Finder and on the Desktop, not in third-party file browsers or Open/Save dialogs. Pasting into a non-Finder app copies rather than moves, which is the safe direction to fail in.
 ```
 
+## Promotional text (170 chars max)
+
+Unlike the description, this can be changed at any time **without submitting a new
+version or waiting for review**. So it should carry whatever is currently worth
+saying — a launch note, a new feature, a milestone — not a permanent description.
+
+Launch text:
+
+```
+Free and open source, with no ads and no tracking. Press ⌘X on a file in Finder, then ⌘V where you want it — the items move, exactly like on Windows.
+```
+
+If the field rejects the symbols the way Subtitle does, use:
+
+```
+Free and open source, with no ads and no tracking. Cut a file in Finder with the keyboard, paste it where you want, and it moves — exactly like on Windows.
+```
+
 ## Keywords (100 chars max, comma separated, no spaces after commas)
 
 ```
