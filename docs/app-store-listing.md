@@ -14,6 +14,7 @@ Everything App Store Connect asks for, written out. Paste, don't improvise.
 | Secondary category | Productivity |
 | Price | Free |
 | Age rating | 4+ |
+| Copyright | `2026 Ahmed Helal` — year then name. Apple adds the © itself; do not type it, and do not add "All rights reserved". The year is the year of first publication and stays fixed in later versions. |
 
 **On the name:** plain `CutX` is unavailable in App Store Connect, even though a
 public App Store search returns nothing for it — Apple reserves names for apps that
@@ -105,11 +106,19 @@ cut,paste,move,files,finder,clipboard,windows,shortcut,keyboard,productivity,uti
 | Marketing URL | `https://github.com/helalrules7/cutx` |
 | Privacy Policy URL | `https://github.com/helalrules7/cutx/blob/master/PRIVACY.md` |
 
-## Privacy questionnaire
+## App Privacy
 
-Answer **"No"** to data collection on every question. CutX has no analytics, no
-network calls, and no third-party SDKs. This is true, and it is verifiable from the
-public source.
+This lives in its own **App Privacy** section in the sidebar, not on the version
+page, and review cannot start until it is filled in.
+
+**Get Started** → *"Do you or your third-party partners collect data from this
+app?"* → **No, we do not collect data from this app** → **Publish**.
+
+That is accurate: no analytics, no account, no third-party SDKs, and no network
+calls of any kind — verifiable from the public source.
+
+Note that answering "No" commits the app to collecting nothing. That is not a
+constraint here; CutX contains no networking code at all.
 
 ## Notes for the reviewer
 
