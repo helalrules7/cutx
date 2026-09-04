@@ -53,7 +53,11 @@ This section matters most. A regression here makes CutX unusable.
 - [ ] Left-click the menu-bar icon — the window opens.
 - [ ] Right-click — the short menu appears with cut state, Clear, Open, Buy me a
       coffee, and Quit.
-- [ ] `⌘X`, then Clear from that menu — badge clears, `⌘V` does nothing special.
+- [ ] `⌘X`, then Clear from that menu — badge clears, and a following `⌘V` does
+      **nothing at all**: the files are neither moved nor copied. Clear releases the
+      pasteboard, not just CutX's own state.
+- [ ] `⌘X` files, copy text in TextEdit, then Clear in Finder, then `⌘V` in TextEdit
+      — the text still pastes. Clear must never empty a pasteboard another app owns.
 - [ ] **Sounds:** uncheck "Play sound" — cut and paste are silent, the list and
       slider grey out.
 - [ ] **Sounds:** press ▶ on all six rows — each plays immediately, even with
