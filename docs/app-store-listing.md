@@ -7,7 +7,7 @@ Everything App Store Connect asks for, written out. Paste, don't improvise.
 | Field | Value |
 |---|---|
 | Name (30 chars max) | `CutX — Cut and Paste Files` |
-| Subtitle (30 chars max) | `Move files with ⌘X and ⌘V` |
+| Subtitle (30 chars max) | `Move files from the keyboard` |
 | Bundle ID | `com.helalrules.CutX` |
 | SKU | `cutx-mac-001` |
 | Primary category | Utilities |
@@ -25,7 +25,14 @@ and the interface. Only the store listing carries the longer name.
 
 Name and subtitle are deliberately non-overlapping: Apple indexes both, so
 repeating "cut and paste files" in each would waste one of them. Between them they
-cover cut, paste, files, move, and the shortcut itself.
+cover cut, paste, files, move, and keyboard.
+
+**The subtitle field rejects ⌘ and other symbols** — it takes letters, digits and
+basic punctuation only. The description field does accept them.
+
+**Never write "Command X" in any store field.** It is the name of a competing app
+already on the store, and using another app's name in your own metadata is grounds
+for rejection.
 
 ## Description
 
