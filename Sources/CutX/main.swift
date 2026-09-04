@@ -139,6 +139,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func clearCut() {
+        // Clearing means the whole operation is cancelled, so the files CutX put
+        // on the pasteboard go with it — otherwise ⌘V afterwards still pastes a
+        // copy of something the user just cancelled.
+        //
+        // Only when the pasteboard is still the one we armed: anything written
+        // since belongs to another app, and emptying it would destroy their work.
+        if state.isIntact(currentChangeCount: NSPasteboard.general.changeCount) {
+            NSPasteboard.general.clearContents()
+        }
         state.clear()
         menuBar?.update(names: [])
     }
