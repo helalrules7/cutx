@@ -144,7 +144,7 @@ HOW TO TEST
 5. Open TextEdit, type and select text, press ⌘X. The text is cut normally, confirming CutX is inert outside Finder.
 
 BUNDLED AUDIO
-CutX ships six short cut sounds. Three are generated in code by scripts/make-sounds.py and are original. The other four are trimmed from royalty-free effects downloaded from Pixabay and used under the Pixabay Content License, which permits commercial use and modification. Each one is credited by author, title and source URL in ATTRIBUTIONS.md in the repository. This is why the Content Rights question is answered "Yes".
+CutX ships six selectable cut sounds plus one paste sound. Three of the seven files are generated in code by scripts/make-sounds.py and are original. The other four are trimmed from royalty-free effects downloaded from Pixabay and used under the Pixabay Content License, which permits commercial use and modification. Each one is credited by author, title and source URL in ATTRIBUTIONS.md in the repository. This is why the Content Rights question is answered "Yes".
 
 The full source is public at https://github.com/helalrules7/cutx — the keystroke handling is one pure function, `decide(event:context:)`, in Sources/CutXCore/Decision.swift, with unit tests covering every case.
 ```
