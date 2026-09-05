@@ -24,7 +24,7 @@ To exercise the main feature:
 3. Press Command-Z. Finder undoes the move, confirming Finder performed it, not CutX.
 4. Open TextEdit, type and select text, press Command-X. The text is cut normally, confirming CutX does nothing outside Finder.
 
-To reach the settings, left-click the menu-bar icon. Right-click shows a short menu with the current cut state, Clear, Open and Quit.
+To reach the settings, left-click the menu-bar icon. Right-click shows the cut state, Clear, Open and Quit.
 
 4. EXTERNAL SERVICES, TOOLS AND PLATFORMS
 
@@ -44,4 +44,4 @@ It bundles seven short audio files. Three are generated in code by scripts/make-
 
 NOTE ON PERMISSIONS
 
-The CGEventTap inspects only each keystroke's key code, to see whether it is Command-X or Command-V (optionally Control-X and Control-V). Every other key passes through immediately, untouched. Nothing is recorded, stored or transmitted; the app has no networking code. Exactly two Apple Events go to Finder: one asking for the current selection, one asking it to Move Item Here.
+The CGEventTap inspects only each keystroke's key code, to see whether it is Command-X or Command-V (optionally Control-X and Control-V). Every other key passes through untouched. Nothing is recorded, stored or transmitted; the app has no networking code. Exactly two Apple Events go to Finder: one asking for the current selection, one asking it to Move Item Here.
