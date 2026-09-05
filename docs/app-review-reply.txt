@@ -1,0 +1,47 @@
+2. PURPOSE AND TARGET AUDIENCE
+
+CutX adds Windows-style cut and paste for files in Finder.
+
+The problem: macOS has no cut for files. Finder's Edit > Cut is permanently disabled and cannot be enabled by a third party. The real move gesture is Command-C then Option-Command-V (Edit > Move Item Here), which stays hidden in the Edit menu until Option is held.
+
+The audience: people who moved to macOS from Windows and keep pressing Command-X on a file expecting it to move.
+
+The value: Command-X on a file or folder in Finder, then Command-V at the destination, and the items move.
+
+CutX never moves, copies, opens, reads or modifies a file itself. On Command-X it asks Finder to copy the selection; on Command-V it triggers Finder's own Move Item Here. Finder performs every file operation, so undo, the progress window, the Replace/Keep Both dialog and authentication prompts all behave exactly as users expect. Outside Finder, CutX is inert: Command-X in a text editor still cuts text.
+
+3. SETTING UP AND ACCESSING THE MAIN FEATURES
+
+No account, no login, no sample data. CutX is a menu-bar app: on launch it shows no window and no Dock icon, only a scissors icon in the menu bar.
+
+First run: CutX opens its setup window automatically and asks for two permissions, with a live checklist that turns green as each is granted.
+1. Accessibility, required to see the Command-X and Command-V keystrokes. Grant it in System Settings > Privacy & Security > Accessibility.
+2. Automation for Finder. macOS prompts for this on the first Command-X. Click OK.
+
+To exercise the main feature:
+1. In Finder, select any file or folder and press Command-X. A short sound plays, an indicator appears near the pointer, and the menu-bar icon shows a count.
+2. Open a different folder and press Command-V. The item moves and is gone from its original location.
+3. Press Command-Z. Finder undoes the move, confirming Finder performed it, not CutX.
+4. Open TextEdit, type and select text, press Command-X. The text is cut normally, confirming CutX does nothing outside Finder.
+
+To reach the settings, left-click the menu-bar icon. Right-click shows a short menu with the current cut state, Clear, Open and Quit.
+
+4. EXTERNAL SERVICES, TOOLS AND PLATFORMS
+
+None. CutX makes no network connections of any kind. No analytics, telemetry, crash reporting, advertising, accounts, servers, data providers, authentication, payment processing or AI services, and no third-party SDKs.
+
+It uses only Apple frameworks: AppKit, ApplicationServices (CGEventTap), Foundation, ServiceManagement, and Apple Events to talk to Finder. The source is public at https://github.com/helalrules7/cutx and this is verifiable from it.
+
+5. REGIONAL DIFFERENCES
+
+None. CutX behaves identically in every region. It ships interface text in eleven languages (English, Arabic, Spanish, French, German, Brazilian Portuguese, Russian, Simplified Chinese, Japanese, Turkish, Italian) and follows the system language, with a manual override. Arabic renders right-to-left. Only wording and layout direction change.
+
+6. REGULATED INDUSTRY OR PROTECTED THIRD-PARTY MATERIAL
+
+CutX operates in no regulated industry and provides no regulated service.
+
+It bundles seven short audio files. Three are generated in code by scripts/make-sounds.py and are original work. The other four are trimmed from royalty-free Pixabay sound effects, used under the Pixabay Content License, which permits commercial use and modification. Each is credited by author, title and source URL in ATTRIBUTIONS.md in the public repository. This is why Content Rights is answered Yes. No other third-party material is included.
+
+NOTE ON PERMISSIONS
+
+The CGEventTap inspects only each keystroke's key code, to see whether it is Command-X or Command-V (optionally Control-X and Control-V). Every other key passes through immediately, untouched. Nothing is recorded, stored or transmitted; the app has no networking code. Exactly two Apple Events go to Finder: one asking for the current selection, one asking it to Move Item Here.
