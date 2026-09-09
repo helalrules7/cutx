@@ -145,10 +145,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         //
         // Only when the pasteboard is still the one we armed: anything written
         // since belongs to another app, and emptying it would destroy their work.
-        let now = NSPasteboard.general.changeCount
-        let line = "clear: armed=\(state.armedChangeCount) now=\(now) isArmed=\(state.isArmed) intact=\(state.isIntact(currentChangeCount: now))\n"
-        try? line.write(to: URL(fileURLWithPath: "/tmp/cutx-clear.log"), atomically: false, encoding: .utf8)
-        if state.isIntact(currentChangeCount: now) {
+        if state.isIntact(currentChangeCount: NSPasteboard.general.changeCount) {
             NSPasteboard.general.clearContents()
         }
         state.clear()
