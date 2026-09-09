@@ -8,8 +8,17 @@ CONFIG="${1:-release}"
 APP="$ROOT/dist/CutX.app"
 
 cd "$ROOT"
-swift build -c "$CONFIG"
-BIN="$(swift build -c "$CONFIG" --show-bin-path)/CutX"
+
+# The App Store build compiles out the donation link (guideline 3.1.1). Set by
+# scripts/build-appstore.sh; the direct-download build never sets it.
+SWIFT_FLAGS=""
+if [[ "${CUTX_APPSTORE:-0}" == "1" ]]; then
+    SWIFT_FLAGS="-Xswiftc -DAPPSTORE"
+    echo "note: building without the donation link (App Store build)"
+fi
+
+swift build -c "$CONFIG" $SWIFT_FLAGS
+BIN="$(swift build -c "$CONFIG" $SWIFT_FLAGS --show-bin-path)/CutX"
 
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"

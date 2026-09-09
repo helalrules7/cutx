@@ -35,7 +35,7 @@ PKG_IDENTITY="$(security find-identity -v 2>/dev/null \
 [[ -f "$PROFILE" ]] || fail "missing $PROFILE
   Create a Mac App Store provisioning profile for com.helalrules.CutX and save it there."
 
-"$ROOT/scripts/build-app.sh" release
+CUTX_APPSTORE=1 "$ROOT/scripts/build-app.sh" release
 
 echo "==> Embedding the provisioning profile"
 cp "$PROFILE" "$APP/Contents/embedded.provisionprofile"

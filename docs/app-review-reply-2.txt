@@ -1,0 +1,42 @@
+Thank you for the detailed review. Addressing each point.
+
+GUIDELINE 5.2.5 - SUBTITLE
+
+Understood and corrected. The subtitle has been changed to remove the Apple product name. It now reads: "Move files from the keyboard". Please let us know if any other metadata needs revising.
+
+GUIDELINE 3.1.1 - DONATIONS
+
+Understood. The donation link has been removed from the App Store build entirely. There is now no donation mechanism of any kind in the app submitted to the store.
+
+GUIDELINE 2.4.5(i) - APPLE EVENTS TEMPORARY EXCEPTION
+
+We would like to explain why this exception was requested, because removing it would make the app worse for users rather than better, and we would genuinely like to know the sanctioned alternative.
+
+CutX does not move, copy, delete or modify any file. It sends exactly two Apple Events to the file manager: one asking which items the user has selected, and one asking it to perform its own built-in Move Item Here command. The file manager performs the entire operation.
+
+This is a deliberate safety decision. Because the system performs the move:
+- Undo works, using the system's own undo stack.
+- The progress window appears for large or cross-volume transfers.
+- The Replace / Keep Both dialog appears on a name conflict.
+- Authentication is requested for protected locations.
+- File permissions and metadata are preserved.
+
+The alternative - moving files ourselves with FileManager - would require us to reimplement conflict handling, cross-volume copying, progress reporting and rollback. That is exactly the code where a defect destroys a user's data, and it would deliver a worse and less predictable experience than the one the system already provides.
+
+Our question: is there a sanctioned mechanism for a sandboxed app to ask the file manager to move user-selected files? If a specific entitlement, API or extension point exists, we will adopt it. We would prefer any supported approach over implementing the move ourselves.
+
+GUIDELINE 2.4.5 - ACCESSIBILITY
+
+We understand the concern and want to be transparent about what the app does.
+
+CutX uses a CGEventTap to recognise exactly two keystrokes, Command-X and Command-V, and only while the file manager is the frontmost application. Every other keystroke is passed through immediately and untouched, and no keystroke is recorded, stored or transmitted. The app makes no network connections of any kind, which is verifiable from the public source at https://github.com/helalrules7/cutx.
+
+We are aware that this permission exists for assistive purposes and we do not wish to misuse it. However, we are not aware of any other mechanism that allows an application to respond to a keyboard shortcut in another application. The command we are attaching to, Cut in the file manager, is permanently disabled and cannot be enabled by a third party, so there is no menu item or Service to bind to instead.
+
+We would also note that functionally similar applications are currently available on the Mac App Store, which suggests there may be an approach we are not aware of.
+
+Our question, therefore: what is the acceptable mechanism for this functionality on the Mac App Store? If one exists, we will rewrite the app to use it. If there is none, we would appreciate knowing that clearly so that we can stop pursuing an approach that cannot be approved, and we will file an enhancement request through Feedback Assistant.
+
+We are not asking for an exception to the guideline. We are asking for direction, and we will follow it.
+
+Thank you for your time.

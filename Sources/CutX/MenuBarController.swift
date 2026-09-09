@@ -77,7 +77,10 @@ final class MenuBarController {
 
         menu.addItem(.separator())
         menu.addItem(item(T("menu.open"), #selector(openTapped)))
+        // Omitted from App Store builds — see guideline 3.1.1.
+        #if !APPSTORE
         menu.addItem(item("\(T("menu.coffee"))  ☕", #selector(coffeeTapped)))
+        #endif
         menu.addItem(NSMenuItem(
             title: T("menu.quit"),
             action: #selector(NSApplication.terminate(_:)),
@@ -96,7 +99,9 @@ final class MenuBarController {
 
     @objc private func openTapped() { onOpenWindow() }
 
+    #if !APPSTORE
     @objc private func coffeeTapped() {
         NSWorkspace.shared.open(URL(string: "https://buymeacoffee.com/ahmedhelal")!)
     }
+    #endif
 }

@@ -72,6 +72,10 @@ final class AboutTabView: NSView {
             body.trailingAnchor.constraint(equalTo: column.trailingAnchor, constant: -20),
         ])
 
+        // The App Store forbids donation links outside In-App Purchase
+        // (guideline 3.1.1), so the store build ships without one. The
+        // direct-download build is unaffected.
+        #if !APPSTORE
         let coffee = NSButton(
             title: "\(T("about.coffee"))  ☕",
             target: self,
@@ -81,6 +85,7 @@ final class AboutTabView: NSView {
         coffee.controlSize = .large
         coffee.translatesAutoresizingMaskIntoConstraints = false
         column.addArrangedSubview(coffee)
+        #endif
         column.setCustomSpacing(18, after: body)
 
         let source = linkButton(T("about.source"), action: #selector(openSource))
@@ -124,9 +129,11 @@ final class AboutTabView: NSView {
         return button
     }
 
+    #if !APPSTORE
     @objc private func openCoffee() {
         open("https://buymeacoffee.com/ahmedhelal")
     }
+    #endif
 
     @objc private func openSource() {
         open("https://github.com/helalrules7/cutx")
