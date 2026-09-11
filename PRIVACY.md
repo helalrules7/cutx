@@ -18,10 +18,11 @@ That is the whole policy, but here is what it means specifically.
   permission, which you grant explicitly. Keystrokes are examined in memory to
   decide whether the key is one of the two CutX acts on, and are never recorded,
   stored, or sent anywhere.
-- **Asks Finder which files you have selected**, so it knows what to move, and asks
-  Finder to perform the move. This requires macOS Automation permission for Finder,
-  which you grant explicitly. CutX does not move files itself and does not open,
-  read, or modify their contents.
+- **Reads the clipboard after Finder copies.** On ⌘X, CutX presses Finder's own
+  Copy for you and reads the file locations Finder placed on the clipboard, so it
+  knows what to move; on ⌘V it presses Finder's own Move Item Here. Finder performs
+  the move. CutX sends no Apple Events, requests no Automation permission, and does
+  not open, read, or modify the contents of your files.
 - **Stores your settings** — sound choice, volume, language, and the three switches
   — in your Mac's standard preferences, on your Mac only.
 

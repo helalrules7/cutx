@@ -39,8 +39,8 @@ CutX makes the obvious shortcut do the obvious thing.
 
 **CutX never touches your files. It asks Finder to do the move.**
 
-On <kbd>⌘X</kbd> it forwards a copy to Finder and remembers what you marked. On
-<kbd>⌘V</kbd> it forwards Finder's own **Move Item Here**. That means undo
+On <kbd>⌘X</kbd> it presses Finder's own Copy for you and reads what Finder put on
+the clipboard. On <kbd>⌘V</kbd> it presses Finder's own **Move Item Here**. That means undo
 (<kbd>⌘Z</kbd>), the progress window for large transfers, the Replace / Keep Both
 dialog, authentication for protected folders, and permission preservation all work
 exactly as they normally do — because it really is Finder doing the work.
@@ -56,8 +56,9 @@ layout — Arabic, AZERTY, QWERTZ. Press wherever X lives on your keyboard.
 1. Download `CutX.zip` from [Releases](https://github.com/helalrules7/cutx/releases).
 2. Unzip and drag **CutX.app** to Applications.
 3. Open it. It lives in the menu bar — no Dock icon, no window on launch.
-4. Grant the two permissions it asks for. The setup screen shows a live checklist
-   and walks you through it; rows turn green the moment you flip the switch.
+4. Grant the one permission it asks for — Accessibility, so it can see ⌘X and ⌘V.
+   The setup screen shows a live checklist and walks you through it; the row turns
+   green the moment you flip the switch. That is the only permission CutX ever needs.
 
 Requires macOS 13 or later. Signed and notarized by Apple, so it opens with one
 click.
