@@ -20,7 +20,12 @@ KEEP="${1:-}"
 say_result() {   # name, ok(0/1), detail
     if [[ "$2" == 0 ]]; then PASS=$((PASS+1)); RESULTS+=("PASS  $1"); else FAIL=$((FAIL+1)); RESULTS+=("FAIL  $1 — $3"); fi
 }
-key() { osascript -e "tell application \"System Events\" to keystroke \"$1\" using {${2}}" ; sleep 0.9; }
+# Physical key codes, not characters: under a non-Latin input source, keystroke "x"
+# is delivered as whatever sits on that key in the active layout (Cowork found it
+# arriving as Cmd+A under Arabic PC). Key codes are layout-independent, which is
+# also exactly how CutX itself reads the keyboard.
+keycode() { case "$1" in a) echo 0;; x) echo 7;; v) echo 9;; z) echo 6;; *) echo "unknown key $1" >&2; exit 2;; esac; }
+key() { osascript -e "tell application \"System Events\" to key code $(keycode "$1") using {${2}}" ; sleep 0.9; }
 finder_select() {  # POSIX paths...
     local items=""
     for p in "$@"; do items+="POSIX file \"$p\" as alias, "; done

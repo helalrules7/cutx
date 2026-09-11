@@ -11,6 +11,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private var state = CutState()
     private var finderFrontmost = false
+    private var pasteboardWatcher: Timer?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         // Resolved before anything is built: every label reads from it.
@@ -22,6 +23,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         self.menuBar = menuBar
 
         observeFrontmostApp()
+        watchPasteboard()
 
         let monitor = HotkeyMonitor(contextProvider: { [weak self] in
             self?.currentContext() ?? Context(
@@ -82,6 +84,21 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             == FinderBridge.bundleIdentifier
     }
 
+
+    /// The moment anything else writes to the pasteboard, the cut is void — the
+    /// paste path already refuses to act on it, but the badge and menu must say so
+    /// too, or the user sees "1 item cut" for something that can no longer move.
+    /// NSPasteboard posts no notification, so this reads one integer twice a second.
+    private func watchPasteboard() {
+        pasteboardWatcher = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) {
+            [weak self] _ in
+            guard let self, self.state.isArmed else { return }
+            if !self.state.isIntact(currentChangeCount: NSPasteboard.general.changeCount) {
+                self.state.clear()
+                self.menuBar?.update(names: [])
+            }
+        }
+    }
 
     // MARK: - Actions
 
