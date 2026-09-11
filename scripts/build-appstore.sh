@@ -15,8 +15,12 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-APP="$ROOT/dist/CutX.app"
-PKG="$ROOT/dist/CutX.pkg"
+# The store build lives in its own directory. It used to share dist/CutX.app with
+# the direct-download build, and once overwrote a freshly notarized direct build
+# before it was stapled — the release shipped rejected by Gatekeeper.
+OUT="$ROOT/dist/appstore"
+APP="$OUT/CutX.app"
+PKG="$OUT/CutX.pkg"
 PROFILE="$ROOT/Resources/CutX_AppStore.provisionprofile"
 ENTITLEMENTS="$ROOT/Resources/CutX-AppStore.entitlements"
 
@@ -36,6 +40,8 @@ PKG_IDENTITY="$(security find-identity -v 2>/dev/null \
   Create a Mac App Store provisioning profile for com.helalrules.CutX and save it there."
 
 CUTX_APPSTORE=1 "$ROOT/scripts/build-app.sh" release
+rm -rf "$OUT"; mkdir -p "$OUT"
+mv "$ROOT/dist/CutX.app" "$APP"
 
 echo "==> Embedding the provisioning profile"
 cp "$PROFILE" "$APP/Contents/embedded.provisionprofile"
