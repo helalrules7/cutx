@@ -29,8 +29,6 @@
          compliance question on every single upload. -->
     <key>ITSAppUsesNonExemptEncryption</key>
     <false/>
-    <key>NSAppleEventsUsageDescription</key>
-    <string>CutX needs to control Finder so it can copy your selection and move it where you paste.</string>
     <key>CFBundleDevelopmentRegion</key>
     <string>en</string>
     <key>CFBundleLocalizations</key>
