@@ -32,14 +32,19 @@ finder_select() {  # POSIX paths...
     osascript -e "tell application \"Finder\"
         activate
         select {${items%, }}
-    end tell"; sleep 0.6
+    end tell" >/dev/null
+    # Do not send Cmd+X until Finder confirms the selection is in place.
+    for _ in 1 2 3 4 5 6 7 8 9 10; do
+        n=$(osascript -e 'tell application "Finder" to count of (get selection)' 2>/dev/null)
+        [[ "${n:-0}" -ge $# ]] && break; sleep 0.2
+    done; sleep 0.3
 }
 finder_open() { osascript -e "tell application \"Finder\"
         activate
         set target of front Finder window to (POSIX file \"$1\" as alias)
-    end tell"; sleep 0.8; }
+    end tell" >/dev/null; sleep 0.8; }
 finder_deselect() { osascript -e 'tell application "Finder" to set selection to {}'; sleep 0.4; }
-cut_badge_visible() { :; }  # not observable from a script; humans check the badge
+pb_clear() { osascript -l JavaScript -e 'ObjC.import("AppKit"); $.NSPasteboard.generalPasteboard.clearContents' >/dev/null; sleep 0.3; }
 
 echo "== preflight"
 pgrep -x CutX >/dev/null || { echo "CutX is not running. Start a build first."; exit 2; }
@@ -53,7 +58,7 @@ echo "== fixture"
 rm -rf "$FIX"; mkdir -p "$SRC/MyFolder/Nested" "$DST"
 echo a > "$SRC/A.txt"; echo b > "$SRC/B.txt"; echo c > "$SRC/C.txt"; echo d > "$SRC/D.txt"
 echo inside > "$SRC/MyFolder/inside.txt"; echo deep > "$SRC/MyFolder/Nested/deep.txt"
-printf '' | pbcopy
+pb_clear
 osascript -e "tell application \"Finder\"
     activate
     close every window
@@ -81,10 +86,13 @@ if [[ -f "$DST/B.txt" && -f "$DST/C.txt" && ! -f "$SRC/B.txt" ]]; then say_resul
 else say_result "two items move" 1 "B=$([[ -f $DST/B.txt ]] && echo yes || echo no) C=$([[ -f $DST/C.txt ]] && echo yes || echo no)"; fi
 
 echo "== 5. nothing selected -> nothing happens"
-finder_open "$SRC"; finder_deselect; before=$(ls "$SRC" "$DST" | md5); key x "command down"; finder_open "$DST"; key v "command down"; sleep 0.6
-after=$(ls "$SRC" "$DST" | md5)
+# Clear the pasteboard first: leftovers from the previous step would make a plain
+# Finder paste change the listing even when CutX correctly does nothing.
+pb_clear; sleep 0.3
+finder_open "$SRC"; finder_deselect; before=$(ls -A "$SRC" "$DST"); key x "command down"; finder_open "$DST"; key v "command down"; sleep 0.8
+after=$(ls -A "$SRC" "$DST")
 if [[ "$before" == "$after" ]]; then say_result "empty selection is inert" 0
-else say_result "empty selection is inert" 1 "file listing changed"; fi
+else say_result "empty selection is inert" 1 "listing changed:$(diff <(echo "$before") <(echo "$after") | grep '^[<>]' | tr '\n' ' ')"; fi
 
 echo "== 6. pasteboard safety: text copied after cut blocks the move"
 finder_open "$SRC"; finder_select "$SRC/D.txt"; key x "command down"

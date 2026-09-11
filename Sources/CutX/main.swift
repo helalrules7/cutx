@@ -105,24 +105,31 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func performCut() {
         let pasteboard = NSPasteboard.general
         let before = pasteboard.changeCount
-
         FinderBridge.sendCopy()
+        awaitFinderCopy(since: before, deadline: Date().addingTimeInterval(1.0))
+    }
 
-        // Finder writes to the pasteboard a moment after the keystroke. Read back
-        // what it put there: an unchanged count means nothing was selected and
-        // Finder copied nothing, and anything that is not file URLs (text from a
-        // rename field, say) means this was not a file cut. Either way, do not arm.
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) { [weak self] in
-            guard let self else { return }
-            let after = pasteboard.changeCount
-            guard after != before else { return }
+    /// Finder writes to the pasteboard some time after the keystroke — usually
+    /// within a few tens of milliseconds, but not always. A fixed delay is wrong
+    /// in both directions: too short and a busy Finder makes the cut silently
+    /// fail, too long and the indicator lags. So poll the changeCount every 50 ms
+    /// until it moves or a second has passed. A pasteboard that never changes
+    /// means nothing was selected; one that changes to non-file content (text from
+    /// a rename field) means this was not a file cut. Neither arms.
+    private func awaitFinderCopy(since before: Int, deadline: Date) {
+        let pasteboard = NSPasteboard.general
+        if pasteboard.changeCount != before {
             let urls = FinderBridge.pasteboardFileURLs()
             guard !urls.isEmpty else { return }
-
-            self.state.arm(items: urls, changeCount: after)
-            self.menuBar?.update(names: self.state.displayNames)
-            self.sounds.playCut()
-            self.hud.show(count: urls.count)
+            state.arm(items: urls, changeCount: pasteboard.changeCount)
+            menuBar?.update(names: state.displayNames)
+            sounds.playCut()
+            hud.show(count: urls.count)
+            return
+        }
+        guard Date() < deadline else { return }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [weak self] in
+            self?.awaitFinderCopy(since: before, deadline: deadline)
         }
     }
 
