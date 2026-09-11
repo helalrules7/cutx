@@ -60,6 +60,15 @@ Rejected: implementing the move with `FileManager`. It would require re-writing
 conflict detection, cross-volume copy, progress reporting, and rollback — the code
 paths where a bug destroys user data.
 
+**Amendment, 2026-09-11 — how CutX learns what is selected.** The original design
+asked Finder over Apple Events. The App Sandbox refuses Apple Events to Finder even
+with the user's Automation consent (error -600), and Apple no longer grants the
+temporary exception that used to permit it. CutX now sends Finder's own Copy and
+reads the file URLs Finder placed on the pasteboard. An unchanged pasteboard means
+nothing was selected; non-file content means it was not a file cut. Consequences:
+no Apple Events, no Automation permission, no polling, and the app runs under the
+sandbox with no entitlement beyond `app-sandbox`. Finder still performs every move.
+
 ### 4. Visual feedback
 
 A small translucent HUD appears near the pointer at cut time showing the item count,

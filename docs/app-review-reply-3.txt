@@ -1,0 +1,17 @@
+Thank you for the follow-up. Both remaining issues are resolved in build 3 (version 1.1.0).
+
+GUIDELINE 2.4.5(i) - TEMPORARY APPLE EVENTS EXCEPTION
+
+Removed entirely. We took your feedback seriously and re-architected the feature rather than request the exception again.
+
+CutX no longer sends any Apple Events. The app previously asked the file manager which items were selected; it now posts the file manager's own Copy keystroke and reads the file URLs the file manager places on the pasteboard. The move is still performed by the file manager itself via its Move Item Here command, so undo, progress reporting, conflict dialogs and authentication continue to behave exactly as users expect.
+
+As a result the app now runs fully sandboxed with no entitlements other than com.apple.security.app-sandbox, and it no longer requests Automation permission at all. The NSAppleEventsUsageDescription key has also been removed from Info.plist since it no longer applies. The only permission CutX requests is Accessibility, for the reasons described in the Notes for Review.
+
+GUIDELINE 1.5 - SUPPORT URL
+
+Updated to https://ahmedhelal.dev/cutx/support, a dedicated page with a contact email address, setup instructions, answers to common questions, and a link to the issue tracker.
+
+Previously resolved and unchanged: the subtitle no longer contains an Apple product name, and there is no donation mechanism of any kind in the App Store build.
+
+We have updated the Notes for Review to describe the current architecture. Thank you for your patience through these iterations.

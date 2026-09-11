@@ -126,27 +126,29 @@ This is the field that decides whether CutX is approved or rejected. A reviewer 
 cannot see why an app wants to read the keyboard will reject it, and rightly so.
 
 ```
-CutX adds Windows-style cut and paste for files in Finder. It requires two permissions, and here is exactly why.
+CutX adds Windows-style cut and paste for files in the macOS file manager. It requires one permission, and here is exactly why.
 
 ACCESSIBILITY
-CutX installs a CGEventTap to recognise two keystrokes: ⌘X and ⌘V (optionally ⌃X and ⌃V). Every other key is passed through untouched, immediately, without inspection beyond its key code. Nothing is recorded, stored, or transmitted — the app makes no network connections at all.
+CutX installs a CGEventTap to recognise two keystrokes: Command-X and Command-V (optionally Control-X and Control-V), and only while the file manager is the frontmost application. Every other keystroke is passed through immediately and untouched, inspected only by key code. Nothing is recorded, stored or transmitted; the app makes no network connections at all.
 
-The event tap is the only mechanism macOS offers for this. Finder's own ⌘X is permanently disabled and cannot be enabled by a third party.
+This is the only mechanism macOS offers for the feature: the file manager's own Cut command is permanently disabled and cannot be enabled by a third party, so there is no menu item or Service to attach to instead.
 
-AUTOMATION (Finder)
-CutX sends two Apple Events to Finder: one to ask which items are selected, and one to trigger Finder's own Edit ▸ Move Item Here. CutX never moves, opens, reads, or modifies a file itself — Finder performs every file operation. This is a deliberate design decision: it means undo, progress reporting, name-conflict dialogs, and authentication all behave exactly as the user expects, because they are Finder's.
+HOW THE MOVE HAPPENS (no Apple Events)
+CutX does not move, copy, open, read or modify any file, and it sends no Apple Events. On Command-X it posts the file manager's own Copy keystroke and then reads the file URLs the file manager placed on the pasteboard. On Command-V it posts the file manager's own Move Item Here keystroke. The file manager performs the entire operation, which is why undo, the progress window, the Replace / Keep Both dialog and authentication prompts all behave exactly as the user expects.
+
+The app is fully sandboxed with no entitlements beyond app-sandbox itself. It requests no Automation permission.
 
 HOW TO TEST
 1. Grant Accessibility when CutX asks. Its setup screen shows a live checklist and walks you through it.
-2. In Finder, select a file or folder and press ⌘X. A sound plays and the menu-bar icon shows a count.
-3. Open another folder and press ⌘V. The item moves.
-4. Press ⌘Z. Finder undoes the move — confirming that Finder, not CutX, performed it.
-5. Open TextEdit, type and select text, press ⌘X. The text is cut normally, confirming CutX is inert outside Finder.
+2. In the file manager, select a file or folder and press Command-X. A sound plays and the menu-bar icon shows a count.
+3. Open another folder and press Command-V. The item moves.
+4. Press Command-Z. The file manager undoes the move, confirming it performed the move, not CutX.
+5. Open TextEdit, type and select text, press Command-X. The text is cut normally, confirming CutX is inert outside the file manager.
 
 BUNDLED AUDIO
-CutX ships six selectable cut sounds plus one paste sound. Three of the seven files are generated in code by scripts/make-sounds.py and are original. The other four are trimmed from royalty-free effects downloaded from Pixabay and used under the Pixabay Content License, which permits commercial use and modification. Each one is credited by author, title and source URL in ATTRIBUTIONS.md in the repository. This is why the Content Rights question is answered "Yes".
+CutX ships six selectable cut sounds plus one paste sound. Three of the seven files are generated in code by scripts/make-sounds.py and are original. The other four are trimmed from royalty-free effects downloaded from Pixabay and used under the Pixabay Content License, which permits commercial use and modification. Each is credited by author, title and source URL in ATTRIBUTIONS.md in the repository. This is why the Content Rights question is answered "Yes".
 
-The full source is public at https://github.com/helalrules7/cutx — the keystroke handling is one pure function, `decide(event:context:)`, in Sources/CutXCore/Decision.swift, with unit tests covering every case.
+The full source is public at https://github.com/helalrules7/cutx.
 ```
 
 ## Content Rights
