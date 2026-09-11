@@ -6,6 +6,11 @@ covers the decision logic; this covers everything else.
 
 Use a throwaway folder of junk files. Never run this against real work.
 
+**Most of the file-operation checks below are automated** in
+`scripts/integration-test.sh`, which drives Finder from outside the sandbox and
+checks the disk after every step. Run it first; it takes about a minute. What it
+cannot judge — sounds, the on-screen indicator, how the window looks — stays here.
+
 ```bash
 rm -rf ~/Desktop/CutX-Test
 mkdir -p ~/Desktop/CutX-Test/Source/MyFolder ~/Desktop/CutX-Test/Destination

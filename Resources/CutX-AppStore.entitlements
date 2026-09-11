@@ -12,15 +12,5 @@
          CGEventTap once the user grants Accessibility. -->
     <key>com.apple.security.app-sandbox</key>
     <true/>
-
-    <!-- CutX asks Finder which files are selected, and asks Finder to move them.
-         The temporary exception names Finder specifically rather than allowing
-         Apple Events to anything. -->
-    <key>com.apple.security.automation.apple-events</key>
-    <true/>
-    <key>com.apple.security.temporary-exception.apple-events</key>
-    <array>
-        <string>com.apple.finder</string>
-    </array>
 </dict>
 </plist>

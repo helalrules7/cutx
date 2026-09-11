@@ -5,12 +5,10 @@ import ApplicationServices
 /// state rather than having the app infer it from behavior.
 enum Permission: CaseIterable {
     case accessibility
-    case automation
 
     var title: String {
         switch self {
         case .accessibility: return T("permission.accessibility")
-        case .automation: return T("permission.automation")
         }
     }
 
@@ -18,15 +16,12 @@ enum Permission: CaseIterable {
         switch self {
         case .accessibility:
             return T("permission.accessibility.detail")
-        case .automation:
-            return T("permission.automation.detail")
         }
     }
 
     var isGranted: Bool {
         switch self {
         case .accessibility: return AXIsProcessTrusted()
-        case .automation: return PermissionsCoordinator.canAutomateFinder()
         }
     }
 
@@ -34,7 +29,6 @@ enum Permission: CaseIterable {
         let pane: String
         switch self {
         case .accessibility: pane = "Privacy_Accessibility"
-        case .automation: pane = "Privacy_Automation"
         }
         NSWorkspace.shared.open(
             URL(string: "x-apple.systempreferences:com.apple.preference.security?\(pane)")!
@@ -56,18 +50,4 @@ enum PermissionsCoordinator {
         _ = AXIsProcessTrustedWithOptions(options)
     }
 
-    /// Asks macOS whether CutX may send Apple Events to Finder, without prompting.
-    static func canAutomateFinder() -> Bool {
-        var target = AEAddressDesc()
-        let bundleID = FinderBridge.bundleIdentifier
-        let created = bundleID.withCString { pointer -> OSErr in
-            AECreateDesc(typeApplicationBundleID, pointer, strlen(pointer), &target)
-        }
-        guard created == noErr else { return false }
-        defer { AEDisposeDesc(&target) }
-
-        return AEDeterminePermissionToAutomateTarget(
-            &target, typeWildCard, typeWildCard, false
-        ) == noErr
-    }
 }

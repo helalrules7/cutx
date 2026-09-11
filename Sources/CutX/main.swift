@@ -11,9 +11,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private var state = CutState()
     private var finderFrontmost = false
-    private var selectionCount = 0
-    private var selectionTimer: Timer?
-    private var selectionQueryInFlight = false
+    private var pasteboardWatcher: Timer?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         // Resolved before anything is built: every label reads from it.
@@ -24,9 +22,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         menuBar.onOpenWindow = { [weak self] in self?.mainWindow.show() }
         self.menuBar = menuBar
 
-        FinderBridge.prepare()
         observeFrontmostApp()
-        startSelectionPolling()
+        watchPasteboard()
 
         let monitor = HotkeyMonitor(contextProvider: { [weak self] in
             self?.currentContext() ?? Context(
@@ -59,7 +56,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func currentContext() -> Context {
         Context(
             finderFrontmost: finderFrontmost,
-            hasSelection: selectionCount > 0,
+            // Finder cannot be asked what is selected without Apple Events, which
+            // the sandbox forbids. So the cut proceeds whenever Finder is frontmost,
+            // and performCut() confirms a real selection afterwards by checking
+            // that Finder actually put file URLs on the pasteboard.
+            hasSelection: true,
             isArmed: state.isArmed,
             pasteboardIntact: state.isIntact(
                 currentChangeCount: NSPasteboard.general.changeCount
@@ -78,56 +79,57 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             let app = notification.userInfo?[NSWorkspace.applicationUserInfoKey]
                 as? NSRunningApplication
             self?.finderFrontmost = app?.bundleIdentifier == FinderBridge.bundleIdentifier
-            self?.refreshSelectionCount()
         }
         finderFrontmost = NSWorkspace.shared.frontmostApplication?.bundleIdentifier
             == FinderBridge.bundleIdentifier
     }
 
-    /// Finder has no selection-changed notification, so poll — but only while
-    /// Finder is frontmost, which keeps this idle almost all the time.
-    private func startSelectionPolling() {
-        selectionTimer = Timer.scheduledTimer(withTimeInterval: 0.4, repeats: true) {
-            [weak self] _ in
-            self?.refreshSelectionCount()
-        }
-    }
 
-    private func refreshSelectionCount() {
-        guard finderFrontmost else {
-            selectionCount = 0
-            return
-        }
-        // Skip this tick if the previous round-trip has not come back yet, so a
-        // slow Finder cannot make the polls pile up on each other.
-        guard !selectionQueryInFlight else { return }
-        selectionQueryInFlight = true
-        FinderBridge.selectionCountAsync { [weak self] count in
-            guard let self else { return }
-            self.selectionQueryInFlight = false
-            self.selectionCount = self.finderFrontmost ? count : 0
+    /// The moment anything else writes to the pasteboard, the cut is void — the
+    /// paste path already refuses to act on it, but the badge and menu must say so
+    /// too, or the user sees "1 item cut" for something that can no longer move.
+    /// NSPasteboard posts no notification, so this reads one integer twice a second.
+    private func watchPasteboard() {
+        pasteboardWatcher = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) {
+            [weak self] _ in
+            guard let self, self.state.isArmed else { return }
+            if !self.state.isIntact(currentChangeCount: NSPasteboard.general.changeCount) {
+                self.state.clear()
+                self.menuBar?.update(names: [])
+            }
         }
     }
 
     // MARK: - Actions
 
     private func performCut() {
-        let urls = FinderBridge.selectedURLs()
-        guard !urls.isEmpty else { return }
-
+        let pasteboard = NSPasteboard.general
+        let before = pasteboard.changeCount
         FinderBridge.sendCopy()
+        awaitFinderCopy(since: before, deadline: Date().addingTimeInterval(1.0))
+    }
 
-        // Give Finder a moment to actually write to the pasteboard before
-        // recording the changeCount we will later verify against.
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) { [weak self] in
-            guard let self else { return }
-            self.state.arm(
-                items: urls,
-                changeCount: NSPasteboard.general.changeCount
-            )
-            self.menuBar?.update(names: self.state.displayNames)
-            self.sounds.playCut()
-            self.hud.show(count: urls.count)
+    /// Finder writes to the pasteboard some time after the keystroke — usually
+    /// within a few tens of milliseconds, but not always. A fixed delay is wrong
+    /// in both directions: too short and a busy Finder makes the cut silently
+    /// fail, too long and the indicator lags. So poll the changeCount every 50 ms
+    /// until it moves or a second has passed. A pasteboard that never changes
+    /// means nothing was selected; one that changes to non-file content (text from
+    /// a rename field) means this was not a file cut. Neither arms.
+    private func awaitFinderCopy(since before: Int, deadline: Date) {
+        let pasteboard = NSPasteboard.general
+        if pasteboard.changeCount != before {
+            let urls = FinderBridge.pasteboardFileURLs()
+            guard !urls.isEmpty else { return }
+            state.arm(items: urls, changeCount: pasteboard.changeCount)
+            menuBar?.update(names: state.displayNames)
+            sounds.playCut()
+            hud.show(count: urls.count)
+            return
+        }
+        guard Date() < deadline else { return }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [weak self] in
+            self?.awaitFinderCopy(since: before, deadline: deadline)
         }
     }
 
