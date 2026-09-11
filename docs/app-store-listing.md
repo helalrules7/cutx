@@ -102,7 +102,7 @@ cut,paste,move,files,finder,clipboard,windows,shortcut,keyboard,productivity,uti
 
 | Field | Value |
 |---|---|
-| Support URL | `https://github.com/helalrules7/cutx/issues` |
+| Support URL | `https://ahmedhelal.dev/cutx/support` — a GitHub issues page was rejected under guideline 1.5; Apple wants a page with contact information |
 | Marketing URL | `https://github.com/helalrules7/cutx` |
 | Privacy Policy URL | `https://github.com/helalrules7/cutx/blob/master/PRIVACY.md` |
 

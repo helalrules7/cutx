@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CutX — Support</title>
+<meta name="description" content="Get help with CutX: setup, permissions, common questions, and how to reach the developer.">
+<link rel="icon" href="../assets/icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Changa:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b1020;--card:rgba(255,255,255,.05);--line:rgba(255,255,255,.12);
+      --fg:#eef2ff;--muted:#a8b3d1;--accent:#4d8dff}
+@media (prefers-color-scheme:light){
+  :root{--bg:#f6f8fd;--card:rgba(11,16,32,.04);--line:rgba(11,16,32,.10);--fg:#0b1020;--muted:#4c5878}
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);
+  font:16px/1.72 "Changa",-apple-system,BlinkMacSystemFont,system-ui,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+.wrap{max-width:720px;margin:0 auto;padding:0 24px}
+header{border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;gap:10px;height:62px;font-weight:650}
+.bar img{width:28px;height:28px;border-radius:7px}
+.bar a{color:var(--fg);text-decoration:none;display:flex;align-items:center;gap:10px}
+h1{font-size:clamp(30px,5vw,42px);margin:52px 0 6px;letter-spacing:-.01em}
+.lead{color:var(--muted);margin:0 0 34px}
+.contact{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin:0 0 40px}
+.contact h2{margin:0 0 10px;font-size:18px}
+.contact p{margin:6px 0;color:var(--muted)}
+.contact b{color:var(--fg)}
+h2{font-size:20px;margin:36px 0 10px}
+h3{font-size:16px;margin:24px 0 6px}
+p,li{color:var(--muted)}
+li{margin-bottom:8px}
+kbd{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--card);border:1px solid var(--line);border-radius:6px;padding:1px 6px;font-size:14px;color:var(--fg)}
+footer{padding:40px 0 60px;color:var(--muted);font-size:14px;border-top:1px solid var(--line);margin-top:48px}
+</style>
+</head>
+<body>
+<header><div class="wrap bar"><a href="../"><img src="../assets/icon.png" alt=""> CutX</a></div></header>
+
+<div class="wrap">
+<h1>Support</h1>
+<p class="lead">Help with setup, permissions and common questions — and how to reach me directly.</p>
+
+<div class="contact">
+  <h2>Contact</h2>
+  <p><b>Email:</b> <a href="mailto:helalrules7@gmail.com?subject=CutX%20support">helalrules7@gmail.com</a></p>
+  <p><b>Bug reports and feature requests:</b> <a href="https://github.com/helalrules7/cutx/issues">github.com/helalrules7/cutx/issues</a></p>
+  <p>I answer support email personally, usually within a day or two.</p>
+</div>
+
+<h2>Getting started</h2>
+<p>CutX lives in the menu bar. After you open it there is no window and no Dock icon — only a scissors icon at the top of the screen. Left-click it to open the settings; right-click it for a short menu.</p>
+
+<h3>The two permissions</h3>
+<p>CutX asks for two permissions on first run, and shows a checklist that turns green as you grant each one:</p>
+<ul>
+  <li><b>Accessibility</b> — lets CutX see <kbd>⌘X</kbd> and <kbd>⌘V</kbd>. Grant it in System Settings ▸ Privacy &amp; Security ▸ Accessibility. Without it, nothing happens at all.</li>
+  <li><b>Automation (Finder)</b> — lets CutX ask Finder to move your files. macOS asks for this the first time you press <kbd>⌘X</kbd>; click OK.</li>
+</ul>
+
+<h2>Common questions</h2>
+
+<h3>I press ⌘X and nothing happens.</h3>
+<p>Almost always the Accessibility permission. Open CutX's window — if the General tab shows an orange "Setup needed" banner, follow the checklist. If CutX is already listed in System Settings ▸ Accessibility but switched off, switch it on. If it is listed and on but still not working, remove it from the list and add it again.</p>
+
+<h3>⌘V copied the file instead of moving it.</h3>
+<p>This happens when something else was copied between the cut and the paste — for example text from another app. CutX deliberately stands aside when the clipboard no longer holds what it cut, so it can never move the wrong thing. Cut the files again and paste straight away.</p>
+
+<h3>Can I undo a move?</h3>
+<p>Yes — press <kbd>⌘Z</kbd> in Finder. CutX never moves files itself; it asks Finder to, so Finder's own undo works.</p>
+
+<h3>The cut files don't look faded like on Windows.</h3>
+<p>Correct, and it cannot be changed. macOS gives third-party apps no way to draw inside a Finder window. Instead, the menu-bar icon shows a count of what is cut, and a small indicator appears when you cut.</p>
+
+<h3>Does it work in Open and Save dialogs, or in other file managers?</h3>
+<p>No. CutX works in Finder windows and on the Desktop. Pasting into a non-Finder app copies rather than moves — that is the safe direction to fail in.</p>
+
+<h3>My keyboard isn't English. Which key do I press?</h3>
+<p>Whichever key sits where X is on a US keyboard. CutX reads the physical key, not the character on it, so Arabic, AZERTY and QWERTZ layouts all work.</p>
+
+<h3>How do I change the language, sound or other settings?</h3>
+<p>Left-click the menu-bar icon. General has the language picker and the behaviour switches; Sounds has the six cut sounds with a preview button on each and a volume slider.</p>
+
+<h3>How do I uninstall it?</h3>
+<p>Quit CutX from its right-click menu, then drag CutX.app to the Trash. If you enabled Launch at login, switch it off first, or remove CutX from System Settings ▸ General ▸ Login Items.</p>
+
+<h3>Does CutX collect any data?</h3>
+<p>No. Nothing is collected, stored or sent. CutX makes no network connections at all. See the <a href="../privacy/">privacy policy</a>.</p>
+
+<h2>Still stuck?</h2>
+<p>Email <a href="mailto:helalrules7@gmail.com?subject=CutX%20support">helalrules7@gmail.com</a> with your macOS version and what you tried. Screenshots of the CutX window and the Accessibility settings pane help a lot.</p>
+</div>
+
+<footer><div class="wrap"><a href="../">← Back to CutX</a> · <a href="../privacy/">Privacy</a> · <a href="https://github.com/helalrules7/cutx">GitHub</a></div></footer>
+</body>
+</html>
