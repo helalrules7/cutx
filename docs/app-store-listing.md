@@ -76,6 +76,10 @@ It works in Finder and on the Desktop, not in third-party file browsers or Open/
 
 ## Promotional text (170 chars max)
 
+**No price words here either.** Guideline 2.3.7 treats "free" as a price reference
+in screenshots; promotional text is metadata of the same kind, so keep it out. The
+description is the one field Apple explicitly allows pricing language in.
+
 Unlike the description, this can be changed at any time **without submitting a new
 version or waiting for review**. So it should carry whatever is currently worth
 saying — a launch note, a new feature, a milestone — not a permanent description.
@@ -83,13 +87,13 @@ saying — a launch note, a new feature, a milestone — not a permanent descrip
 Launch text:
 
 ```
-Free and open source, with no ads and no tracking. Press ⌘X on a file in Finder, then ⌘V where you want it — the items move, exactly like on Windows.
+Open source, with no ads and no tracking. Press ⌘X on a file in Finder, then ⌘V where you want it — the items move, exactly like on Windows.
 ```
 
 If the field rejects the symbols the way Subtitle does, use:
 
 ```
-Free and open source, with no ads and no tracking. Cut a file in Finder with the keyboard, paste it where you want, and it moves — exactly like on Windows.
+Open source, with no ads and no tracking. Cut a file in Finder with the keyboard, paste it where you want, and it moves — exactly like on Windows.
 ```
 
 ## Keywords (100 chars max, comma separated, no spaces after commas)

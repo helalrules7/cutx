@@ -1,0 +1,9 @@
+Thank you. The pricing reference has been removed.
+
+GUIDELINE 2.3.7 - ACCURATE METADATA
+
+One screenshot carried the headline "Free. Open source." It has been removed from the set, together with a second screenshot of the About screen that showed the same wording. The remaining four screenshots contain no reference to price, cost, or free availability. The promotional text has also been revised to remove the word "free".
+
+Pricing is now mentioned only in the app description, as suggested.
+
+This is a metadata-only change; build 1.1.0 (3) is unchanged.

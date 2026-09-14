@@ -33,9 +33,9 @@ let shots = [
     Shot(file: "sounds.png",
          headline: "Six sounds, or none",
          sub: "Preview each one and pick what you can live with."),
-    Shot(file: "about.png",
-         headline: "Free. Open source.",
-         sub: "No ads, no tracking, no account, no network."),
+    // The About tab is deliberately NOT in the store set: the direct-download build
+    // it was captured from shows a donation button and the words "Free and open
+    // source", and App Review reads both as price references (guideline 2.3.7).
 ]
 
 func draw(_ text: String, font: NSFont, color: NSColor, centeredIn rect: NSRect, y: CGFloat) {
