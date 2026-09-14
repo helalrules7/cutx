@@ -87,14 +87,14 @@ saying — a launch note, a new feature, a milestone — not a permanent descrip
 Launch text:
 
 ```
-Open source, with no ads and no tracking. Press ⌘X on a file in Finder, then ⌘V where you want it — the items move, exactly like on Windows.
+Open source, with no ads and no tracking. Cut a file from the keyboard, paste it where you want, and it actually moves.
 ```
 
-If the field rejects the symbols the way Subtitle does, use:
-
-```
-Open source, with no ads and no tracking. Cut a file in Finder with the keyboard, paste it where you want, and it moves — exactly like on Windows.
-```
+Deliberately free of three words: **"free"** (a price reference under 2.3.7),
+**"Windows"** (Microsoft's trademark — the same objection that hit "Finder" could
+apply), and **"Finder"** (rejected in the subtitle under 5.2.5). The description is
+the only field where Apple tolerates that language, and even there "Windows" is a
+risk worth weighing.
 
 ## Keywords (100 chars max, comma separated, no spaces after commas)
 
