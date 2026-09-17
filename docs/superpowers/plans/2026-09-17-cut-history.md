@@ -901,6 +901,458 @@ and it sidesteps the pasteboard problem entirely rather than fighting it.
 The old panel design (number keys, arrows, Return pastes) is superseded. Task 7's
 original content below is kept for reference but must not be implemented as written.
 
+#### Task 7a — the entry remembers where it came from
+
+`HistoryEntry` stores `urls`, which start at the origin and are re-pointed to the
+destination after a paste. "Put them back" needs the origin kept separately.
+
+**Files:** `Sources/CutXCore/CutHistory.swift`, `Tests/CutXCoreTests/CutHistoryTests.swift`
+
+**Produces:** `HistoryEntry.origin: URL` (the folder the files were cut from, fixed
+for the entry's life) and `HistoryEntry.hasMoved: Bool` (true once `urls` no longer
+sit in `origin`).
+
+- [ ] **Step 1: Add the failing tests**
+
+Append to `Tests/CutXCoreTests/CutHistoryTests.swift`:
+```swift
+@Test func recordsWhereTheFilesCameFrom() {
+    var h = CutHistory()
+    h.record([url("a.txt")])
+    #expect(h.entries[0].origin.path == "/Users/x")
+    #expect(h.entries[0].hasMoved == false)
+}
+
+// The origin is the whole point of "put them back", so a paste must not overwrite it.
+@Test func originSurvivesAPaste() {
+    var h = CutHistory()
+    h.record([url("a.txt")])
+    let id = h.entries[0].id
+    h.updatePaths(id: id, to: [URL(fileURLWithPath: "/Users/x/Archive/a.txt")])
+    #expect(h.entries[0].origin.path == "/Users/x")
+    #expect(h.entries[0].urls.first?.path == "/Users/x/Archive/a.txt")
+    #expect(h.entries[0].hasMoved == true)
+}
+
+// Moving something back to where it started makes the entry inert again.
+@Test func movingBackToOriginClearsHasMoved() {
+    var h = CutHistory()
+    h.record([url("a.txt")])
+    let id = h.entries[0].id
+    h.updatePaths(id: id, to: [URL(fileURLWithPath: "/Users/x/Archive/a.txt")])
+    h.updatePaths(id: id, to: [url("a.txt")])
+    #expect(h.entries[0].hasMoved == false)
+}
+```
+
+- [ ] **Step 2: Run and confirm they fail**
+
+Run: `./scripts/test.sh 2>&1 | tail -20`
+Expected: `value of type 'HistoryEntry' has no member 'origin'`.
+
+- [ ] **Step 3: Implement**
+
+In `HistoryEntry`, add the stored property after `cutAt`:
+```swift
+    /// The folder the files were cut from. Fixed for the entry's life: it is what
+    /// "put them back" means, so a paste must never overwrite it.
+    public let origin: URL
+```
+
+Set it in `init`, after `self.cutAt = cutAt`:
+```swift
+        self.origin = urls.first?.deletingLastPathComponent() ?? URL(fileURLWithPath: "/")
+```
+
+Add after `subtitle`:
+```swift
+    /// True once the files no longer sit where they were cut from.
+    public var hasMoved: Bool {
+        urls.first?.deletingLastPathComponent() != origin
+    }
+```
+
+- [ ] **Step 4: Run and confirm they pass**
+
+Run: `./scripts/test.sh 2>&1 | tail -5`
+Expected: `59 tests passed`.
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add Sources/CutXCore/CutHistory.swift Tests/CutXCoreTests/CutHistoryTests.swift
+git commit -m "feat: history entries remember where they were cut from
+
+Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
+```
+
+---
+
+#### Task 7b — `FinderBridge` gains the three actions
+
+**Files:** `Sources/CutX/FinderBridge.swift`
+
+**Produces:** `static func selectInFinder(_ urls: [URL])`, `static func recopy(_ urls: [URL], then: @escaping (Int) -> Void)`.
+
+- [ ] **Step 1: Add both functions**
+
+Append inside `enum FinderBridge`:
+```swift
+    /// Reveals the files in Finder with them selected.
+    ///
+    /// `activateFileViewerSelecting` is a plain NSWorkspace call: no Apple Events
+    /// and no Automation permission, so the sandboxed App Store build is
+    /// unaffected. This is what makes re-cutting an old entry possible at all.
+    static func selectInFinder(_ urls: [URL]) {
+        NSWorkspace.shared.activateFileViewerSelecting(urls)
+    }
+
+    /// Selects the files in Finder and has Finder copy them, so the pasteboard
+    /// ends up carrying Finder's own data — `com.apple.finder.noderef` included.
+    ///
+    /// That type is what Move Item Here actually consumes, and only Finder can
+    /// write it. Writing file URLs ourselves is not equivalent: it looks correct
+    /// and silently does nothing. Verified 2026-09-17.
+    ///
+    /// Note it must be ⌘C, not ⌘X: Finder's Cut is permanently disabled.
+    static func recopy(_ urls: [URL], then completion: @escaping (Int) -> Void) {
+        let before = NSPasteboard.general.changeCount
+        selectInFinder(urls)
+        // Finder needs a moment to bring the window forward and apply the
+        // selection before the keystroke means anything.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) {
+            sendCopy()
+            awaitChange(since: before, deadline: Date().addingTimeInterval(1.0), then: completion)
+        }
+    }
+
+    private static func awaitChange(since before: Int, deadline: Date, then completion: @escaping (Int) -> Void) {
+        let now = NSPasteboard.general.changeCount
+        if now != before { completion(now); return }
+        guard Date() < deadline else { completion(before); return }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+            awaitChange(since: before, deadline: deadline, then: completion)
+        }
+    }
+```
+
+- [ ] **Step 2: Build**
+
+Run: `swift build 2>&1 | grep -E "error" | head -3`
+Expected: no output.
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add Sources/CutX/FinderBridge.swift
+git commit -m "feat: re-cut an old selection through Finder's own copy
+
+Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
+```
+
+---
+
+#### Task 7c — the three actions in `main.swift`
+
+**Files:** `Sources/CutX/main.swift`
+
+**Produces:** `func cutFromHistory(entryID:)`, `func copyFromHistory(entryID:)`, `func putBack(entryID:)`.
+
+- [ ] **Step 1: Replace `pasteFromHistory(entryID:)` with the three actions**
+
+```swift
+    /// Re-cuts an old entry: Finder selects and copies the files, then CutX arms
+    /// itself exactly as a real ⌘X would. The user pastes wherever they like.
+    func cutFromHistory(entryID: UUID) {
+        guard let entry = historyStore.history.entries.first(where: { $0.id == entryID }) else { return }
+        FinderBridge.recopy(entry.urls) { [weak self] changeCount in
+            guard let self else { return }
+            self.state.arm(items: entry.urls, changeCount: changeCount)
+            self.refreshMenuBar()
+            self.sounds.playCut()
+            self.hud.show(count: entry.urls.count)
+        }
+    }
+
+    /// Copies an old entry without arming: a plain Finder copy, so ⌘V duplicates
+    /// rather than moves.
+    func copyFromHistory(entryID: UUID) {
+        guard let entry = historyStore.history.entries.first(where: { $0.id == entryID }) else { return }
+        FinderBridge.recopy(entry.urls) { _ in }
+    }
+
+    /// Moves the files back to the folder they were cut from. Finder performs the
+    /// move, so this is undoable like any other.
+    func putBack(entryID: UUID) {
+        guard let entry = historyStore.history.entries.first(where: { $0.id == entryID }),
+              entry.hasMoved else { return }
+        let origin = entry.origin
+        FinderBridge.recopy(entry.urls) { [weak self] changeCount in
+            guard let self else { return }
+            self.state.arm(items: entry.urls, changeCount: changeCount)
+            FinderBridge.openFolder(origin)
+            // Give Finder time to show the destination before asking it to move.
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                self.performPaste()
+            }
+        }
+    }
+```
+
+- [ ] **Step 2: Add `openFolder` to `FinderBridge.swift`**
+
+```swift
+    /// Opens a folder in Finder and brings it forward, so the next Move Item Here
+    /// lands there.
+    static func openFolder(_ url: URL) {
+        NSWorkspace.shared.open(url)
+    }
+```
+
+- [ ] **Step 3: Build and test**
+
+Run: `swift build 2>&1 | grep error | head -3; ./scripts/test.sh 2>&1 | grep "Test run with"`
+Expected: no errors, `59 tests passed`.
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add Sources/CutX
+git commit -m "feat: cut, copy and put back an entry from history
+
+Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
+```
+
+---
+
+#### Task 7d — the stack UI
+
+Clicking a history entry opens a small panel showing where the files were, where
+they are now, and the three actions. Replaces the superseded ⌥⌘V list.
+
+**Files:** `Sources/CutX/HistoryStack.swift`, `Sources/CutX/MenuBarController.swift`, `Sources/CutX/main.swift`, all eleven `.lproj` files.
+
+**New strings** (add to all eleven; English shown):
+```
+"stack.from" = "From";
+"stack.now" = "Now in";
+"stack.cut" = "Cut these";
+"stack.copy" = "Copy these";
+"stack.putBack" = "Put them back";
+```
+
+Translations: `ar` = من · الآن في · اقص هذه · انسخ هذه · أعدها لمكانها ·
+`es` = Desde · Ahora en · Cortar · Copiar · Devolver ·
+`fr` = Depuis · Maintenant dans · Couper · Copier · Remettre ·
+`de` = Von · Jetzt in · Ausschneiden · Kopieren · Zurücklegen ·
+`pt-BR` = De · Agora em · Recortar · Copiar · Devolver ·
+`ru` = Откуда · Сейчас в · Вырезать · Копировать · Вернуть ·
+`zh-Hans` = 来自 · 现在位于 · 剪切 · 复制 · 放回原处 ·
+`ja` = 元の場所 · 現在の場所 · カット · コピー · 元に戻す ·
+`tr` = Nereden · Şimdi · Kes · Kopyala · Geri koy ·
+`it` = Da · Ora in · Taglia · Copia · Rimetti a posto
+
+- [ ] **Step 1: Write `Sources/CutX/HistoryStack.swift`**
+
+```swift
+import AppKit
+import CutXCore
+
+/// The panel a history entry opens: where the files were, where they are now, and
+/// what can be done with them. A blind "paste this" was the original design and it
+/// could not work — Finder will not move a pasteboard it did not write — so the
+/// entry became a small control panel instead, which is more useful anyway.
+final class HistoryStack {
+    private var panel: NSPanel?
+    private let onCut: (UUID) -> Void
+    private let onCopy: (UUID) -> Void
+    private let onPutBack: (UUID) -> Void
+
+    init(
+        onCut: @escaping (UUID) -> Void,
+        onCopy: @escaping (UUID) -> Void,
+        onPutBack: @escaping (UUID) -> Void
+    ) {
+        self.onCut = onCut
+        self.onCopy = onCopy
+        self.onPutBack = onPutBack
+    }
+
+    func show(entry: HistoryEntry, near point: NSPoint) {
+        hide()
+
+        let width: CGFloat = 340
+        let height: CGFloat = entry.hasMoved ? 214 : 178
+
+        let background = NSVisualEffectView(frame: NSRect(x: 0, y: 0, width: width, height: height))
+        background.material = .hudWindow
+        background.blendingMode = .behindWindow
+        background.state = .active
+        background.wantsLayer = true
+        background.layer?.cornerRadius = 12
+        background.layer?.masksToBounds = true
+
+        var y = height - 34
+
+        let title = NSTextField(labelWithString: MenuBarController.label(for: entry))
+        title.font = .systemFont(ofSize: 13, weight: .semibold)
+        title.lineBreakMode = .byTruncatingMiddle
+        title.frame = NSRect(x: 16, y: y, width: width - 32, height: 18)
+        background.addSubview(title)
+        y -= 30
+
+        addRow(to: background, label: T("stack.from"), value: entry.origin.path, y: &y, width: width)
+        if entry.hasMoved {
+            addRow(to: background, label: T("stack.now"), value: entry.subtitle, y: &y, width: width)
+        }
+
+        y -= 10
+        addButton(to: background, title: T("stack.cut"), y: &y, width: width, prominent: true) { [weak self] in
+            self?.hide(); self?.onCut(entry.id)
+        }
+        addButton(to: background, title: T("stack.copy"), y: &y, width: width, prominent: false) { [weak self] in
+            self?.hide(); self?.onCopy(entry.id)
+        }
+        if entry.hasMoved {
+            addButton(to: background, title: T("stack.putBack"), y: &y, width: width, prominent: false) { [weak self] in
+                self?.hide(); self?.onPutBack(entry.id)
+            }
+        }
+
+        let panel = NSPanel(
+            contentRect: NSRect(origin: clamped(point, size: NSSize(width: width, height: height)),
+                                size: NSSize(width: width, height: height)),
+            styleMask: [.borderless, .nonactivatingPanel],
+            backing: .buffered,
+            defer: false
+        )
+        panel.contentView = background
+        panel.isOpaque = false
+        panel.backgroundColor = .clear
+        panel.hasShadow = true
+        panel.level = .floating
+        panel.collectionBehavior = [.canJoinAllSpaces, .transient]
+        panel.orderFrontRegardless()
+        self.panel = panel
+
+        L10n.applyDirection(to: background)
+    }
+
+    func hide() {
+        panel?.orderOut(nil)
+        panel = nil
+    }
+
+    private func addRow(to view: NSView, label: String, value: String, y: inout CGFloat, width: CGFloat) {
+        let caption = NSTextField(labelWithString: label)
+        caption.font = .systemFont(ofSize: 10, weight: .semibold)
+        caption.textColor = .tertiaryLabelColor
+        caption.frame = NSRect(x: 16, y: y + 14, width: width - 32, height: 13)
+        view.addSubview(caption)
+
+        let path = NSTextField(labelWithString: value)
+        path.font = .systemFont(ofSize: 11)
+        path.textColor = .secondaryLabelColor
+        path.lineBreakMode = .byTruncatingHead
+        path.frame = NSRect(x: 16, y: y, width: width - 32, height: 14)
+        view.addSubview(path)
+        y -= 36
+    }
+
+    private func addButton(
+        to view: NSView, title: String, y: inout CGFloat, width: CGFloat,
+        prominent: Bool, action: @escaping () -> Void
+    ) {
+        let button = ActionButton(title: title, action: action)
+        button.bezelStyle = .rounded
+        if prominent { button.keyEquivalent = "\r" }
+        button.frame = NSRect(x: 16, y: y, width: width - 32, height: 26)
+        view.addSubview(button)
+        y -= 30
+    }
+
+    /// Keeps the panel fully on screen wherever the pointer happens to be.
+    private func clamped(_ point: NSPoint, size: NSSize) -> NSPoint {
+        var origin = NSPoint(x: point.x - size.width / 2, y: point.y - size.height - 8)
+        if let screen = NSScreen.screens.first(where: { $0.frame.contains(point) }) ?? NSScreen.main {
+            let frame = screen.visibleFrame
+            origin.x = min(max(origin.x, frame.minX + 8), frame.maxX - size.width - 8)
+            origin.y = min(max(origin.y, frame.minY + 8), frame.maxY - size.height - 8)
+        }
+        return origin
+    }
+}
+
+/// A button that owns its closure, so the panel does not need a target object per
+/// action.
+private final class ActionButton: NSButton {
+    private let handler: () -> Void
+
+    init(title: String, action: @escaping () -> Void) {
+        self.handler = action
+        super.init(frame: .zero)
+        self.title = title
+        self.target = self
+        self.action = #selector(fire)
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) { fatalError("not used") }
+
+    @objc private func fire() { handler() }
+}
+```
+
+- [ ] **Step 2: Open the stack from the menu**
+
+In `MenuBarController.swift`, replace `onPasteHistory` with:
+```swift
+    var onOpenStack: (UUID) -> Void = { _ in }
+```
+and in `historyPicked`:
+```swift
+        onOpenStack(id)
+```
+
+- [ ] **Step 3: Wire the three actions in `main.swift`**
+
+Replace the `menuBar.onPasteHistory = ...` line with:
+```swift
+        menuBar.onOpenStack = { [weak self] id in
+            guard let self,
+                  let entry = self.historyStore.history.entries.first(where: { $0.id == id })
+            else { return }
+            self.historyStack.show(entry: entry, near: NSEvent.mouseLocation)
+        }
+```
+and add the property:
+```swift
+    private lazy var historyStack = HistoryStack(
+        onCut: { [weak self] in self?.cutFromHistory(entryID: $0) },
+        onCopy: { [weak self] in self?.copyFromHistory(entryID: $0) },
+        onPutBack: { [weak self] in self?.putBack(entryID: $0) }
+    )
+```
+
+- [ ] **Step 4: Build and check by hand**
+
+Run: `pkill -x CutX; ./scripts/build-app.sh && ./scripts/test.sh 2>&1 | grep "Test run with" && open dist/CutX.app`
+
+Expected: picking an entry from Recent opens a small panel showing **From** and,
+once it has moved, **Now in**, with **Cut these**, **Copy these** and **Put them
+back**. Each action works and `⌘Z` undoes the resulting move.
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add Sources/CutX Resources
+git commit -m "feat: a history entry opens a stack with cut, copy and put back
+
+Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
+```
+
+---
+
 ### Task 7 (superseded): The `⌥⌘V` panel
 
 **Files:**
