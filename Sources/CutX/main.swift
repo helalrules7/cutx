@@ -10,6 +10,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private lazy var mainWindow = MainWindow(preferences: preferences, player: sounds)
 
     private var state = CutState()
+    private let historyStore = HistoryStore()
     private var finderFrontmost = false
     private var pasteboardWatcher: Timer?
 
@@ -124,6 +125,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             let urls = FinderBridge.pasteboardFileURLs()
             guard !urls.isEmpty else { return }
             state.arm(items: urls, changeCount: pasteboard.changeCount)
+            self.historyStore.history.record(urls)
             menuBar?.update(names: state.displayNames)
             sounds.playCut()
             hud.show(count: urls.count)
@@ -136,10 +138,33 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func performPaste() {
+        // Remember what is about to move and where it is going, so the history
+        // entry can be re-pointed at the new location after Finder is done.
+        let moved = state.items
+        let destination = FinderBridge.frontmostFinderDirectory()
+
         FinderBridge.sendMoveItemHere()
         state.clear()
         menuBar?.update(names: [])
         sounds.playPaste()
+
+        guard let destination,
+              let entry = historyStore.history.entries.first(where: { $0.urls == moved })
+        else { return }
+        historyStore.history.updatePaths(
+            id: entry.id,
+            to: moved.map { destination.appendingPathComponent($0.lastPathComponent) }
+        )
+    }
+
+    /// Pastes an entry the user picked from history. The pasteboard no longer
+    /// holds it, so CutX writes it back before asking Finder to move.
+    func pasteFromHistory(entryID: UUID) {
+        guard let entry = historyStore.history.entries.first(where: { $0.id == entryID }) else { return }
+        let changeCount = FinderBridge.writeToPasteboard(entry.urls)
+        state.arm(items: entry.urls, changeCount: changeCount)
+        menuBar?.update(names: state.displayNames)
+        performPaste()
     }
 
     private func clearCut() {

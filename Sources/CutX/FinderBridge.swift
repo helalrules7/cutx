@@ -1,4 +1,5 @@
 import AppKit
+import ApplicationServices
 import CutXCore
 
 /// Everything CutX does to Finder — which is only ever two synthetic keystrokes.
@@ -27,6 +28,19 @@ enum FinderBridge {
         return (objects as? [URL]) ?? []
     }
 
+    /// Puts file URLs on the pasteboard in the form Finder's Move Item Here
+    /// accepts, and returns the new changeCount.
+    ///
+    /// Verified 2026-09-17: Finder treats a pasteboard written by another app
+    /// exactly as it treats its own, so the move stays Finder's work.
+    @discardableResult
+    static func writeToPasteboard(_ urls: [URL]) -> Int {
+        let pasteboard = NSPasteboard.general
+        pasteboard.clearContents()
+        pasteboard.writeObjects(urls.map { $0 as NSURL })
+        return pasteboard.changeCount
+    }
+
     /// Finder's Copy. Puts the selection on the pasteboard in the form
     /// Move Item Here expects.
     static func sendCopy() {
@@ -37,6 +51,32 @@ enum FinderBridge {
     /// which is what gives us undo, progress, and conflict handling.
     static func sendMoveItemHere() {
         post(keyCode: KeyCode.v, flags: [.maskCommand, .maskAlternate])
+    }
+
+    /// The folder shown in the frontmost Finder window, read from the window's
+    /// Accessibility document attribute. Apple Events are not an option here:
+    /// removing them is what made the sandboxed build possible at all.
+    ///
+    /// Returns nil when Finder has no window (the Desktop), which simply means
+    /// the history entry keeps its old path.
+    static func frontmostFinderDirectory() -> URL? {
+        guard let app = NSWorkspace.shared.runningApplications.first(where: {
+            $0.bundleIdentifier == bundleIdentifier
+        }) else { return nil }
+
+        let element = AXUIElementCreateApplication(app.processIdentifier)
+        var windowValue: CFTypeRef?
+        guard AXUIElementCopyAttributeValue(element, kAXFocusedWindowAttribute as CFString, &windowValue) == .success,
+              let window = windowValue
+        else { return nil }
+
+        var documentValue: CFTypeRef?
+        guard AXUIElementCopyAttributeValue(window as! AXUIElement, kAXDocumentAttribute as CFString, &documentValue) == .success,
+              let path = documentValue as? String,
+              let url = URL(string: path)
+        else { return nil }
+
+        return url.isFileURL ? url : nil
     }
 
     private static func post(keyCode: UInt16, flags: CGEventFlags) {
