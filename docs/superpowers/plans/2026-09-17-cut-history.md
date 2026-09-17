@@ -853,7 +853,55 @@ Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
 
 ---
 
-### Task 7: The `⌥⌘V` panel
+### Correction, 2026-09-17 — Task 5's premise was wrong, and what replaces it
+
+**The spike that justified Task 5 was measuring stale state.** It wrote file URLs
+to the pasteboard, posted ⌥⌘V, and the file moved — so the plan concluded Finder
+accepts a third-party pasteboard. It does not. The pasteboard still carried
+`com.apple.finder.noderef` from a Finder copy earlier in that session, and that is
+what Move Item Here actually consumes. With the pasteboard properly emptied first,
+the same experiment fails every time, whether CutX is running or not.
+
+Three wrong diagnoses were reached before the measurement was made correctly:
+that CutX was swallowing its own synthetic keystroke (the marker works — proved by
+logging the tap), that the app being alive was the variable (killing it changed
+nothing), and that our pasteboard types were sufficient (they are not).
+
+**What does work, verified end to end:**
+
+```
+NSWorkspace.activateFileViewerSelecting(urls)   → Finder selects the files
+synthetic ⌘C                                    → Finder writes its own pasteboard,
+                                                   noderef included
+synthetic ⌥⌘V                                   → a genuine move; source gone
+```
+
+`activateFileViewerSelecting` is a plain `NSWorkspace` call — **no Apple Events, no
+Automation permission** — so the sandboxed App Store build is unaffected. Finder
+still performs every move, so undo, progress and conflict dialogs are unchanged.
+Note the second step must be ⌘C, not ⌘X: Finder's Cut is permanently disabled and
+produces nothing.
+
+### Task 7 (revised): the history entry opens a stack, not a blind paste
+
+Decided with Ahmed on 2026-09-17, and better than the original panel: clicking an
+entry opens a small stack showing **where the files were** and **where they went**,
+with actions on hover:
+
+- **Cut these files** — reveal-and-select in Finder, synthetic ⌘C, then arm CutX
+  exactly as a real ⌘X does. The user then pastes wherever they like, with the
+  normal ⌘V. This is why the approach is sound: the pasteboard is Finder's own.
+- **Copy these files** — the same, without arming; a plain Finder copy.
+- **Put them back** — move them to the location the entry was cut from, which the
+  history already records.
+
+This turns history from a blind paste into a small control panel for a past cut,
+and it sidesteps the pasteboard problem entirely rather than fighting it.
+
+The old panel design (number keys, arrows, Return pastes) is superseded. Task 7's
+original content below is kept for reference but must not be implemented as written.
+
+### Task 7 (superseded): The `⌥⌘V` panel
 
 **Files:**
 - Create: `Sources/CutX/HistoryPanel.swift`

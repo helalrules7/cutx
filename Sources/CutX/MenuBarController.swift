@@ -8,8 +8,11 @@ final class MenuBarController {
 
     var onClear: () -> Void = {}
     var onOpenWindow: () -> Void = {}
+    var onPasteHistory: (UUID) -> Void = { _ in }
+    var onClearHistory: () -> Void = {}
 
     private var names: [String] = []
+    private var history: [HistoryEntry] = []
 
     init() {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
@@ -21,8 +24,9 @@ final class MenuBarController {
         rebuild()
     }
 
-    func update(names: [String]) {
+    func update(names: [String], history: [HistoryEntry] = []) {
         self.names = names
+        self.history = history
         rebuild()
     }
 
@@ -75,6 +79,11 @@ final class MenuBarController {
             menu.addItem(item(T("menu.clear"), #selector(clearTapped)))
         }
 
+        if Entitlements.hasPro {
+            menu.addItem(.separator())
+            menu.addItem(historyMenuItem())
+        }
+
         menu.addItem(.separator())
         menu.addItem(item(T("menu.open"), #selector(openTapped)))
         // Omitted from App Store builds — see guideline 3.1.1.
@@ -89,11 +98,56 @@ final class MenuBarController {
         return menu
     }
 
+    /// The recent cuts, as a submenu. Selecting one pastes it into the frontmost
+    /// Finder window, exactly as the panel does.
+    private func historyMenuItem() -> NSMenuItem {
+        let submenu = NSMenu()
+
+        if history.isEmpty {
+            let empty = NSMenuItem(title: T("history.empty"), action: nil, keyEquivalent: "")
+            empty.isEnabled = false
+            submenu.addItem(empty)
+        } else {
+            for entry in history.prefix(10) {
+                let item = NSMenuItem(
+                    title: Self.label(for: entry),
+                    action: #selector(historyPicked(_:)),
+                    keyEquivalent: ""
+                )
+                item.target = self
+                item.representedObject = entry.id
+                item.toolTip = entry.subtitle
+                submenu.addItem(item)
+            }
+            submenu.addItem(.separator())
+            submenu.addItem(item(T("history.clear"), #selector(clearHistoryTapped)))
+        }
+
+        let parent = NSMenuItem(title: T("history.recent"), action: nil, keyEquivalent: "")
+        parent.submenu = submenu
+        return parent
+    }
+
     private func item(_ title: String, _ action: Selector) -> NSMenuItem {
         let menuItem = NSMenuItem(title: title, action: action, keyEquivalent: "")
         menuItem.target = self
         return menuItem
     }
+
+    /// "Report.pdf" alone, or "Report.pdf + 2 more" in whatever wording the
+    /// current language uses. The count's phrasing is localised; the file name
+    /// never is.
+    static func label(for entry: HistoryEntry) -> String {
+        guard entry.extraCount > 0 else { return entry.displayName }
+        return String(format: T("history.more"), entry.displayName, entry.extraCount)
+    }
+
+    @objc private func historyPicked(_ sender: NSMenuItem) {
+        guard let id = sender.representedObject as? UUID else { return }
+        onPasteHistory(id)
+    }
+
+    @objc private func clearHistoryTapped() { onClearHistory() }
 
     @objc private func clearTapped() { onClear() }
 

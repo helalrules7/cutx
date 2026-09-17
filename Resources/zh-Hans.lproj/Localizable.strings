@@ -42,3 +42,9 @@
 "about.license" = "免费开源 · MIT 许可证 · 音效来源见 ATTRIBUTIONS.md";
 "hud.itemCut" = "已剪切 %d 个项目";
 "hud.itemsCut" = "已剪切 %d 个项目";
+"history.recent" = "最近";
+"history.empty" = "还没有剪切任何内容";
+"history.clear" = "清除历史";
+"history.title" = "最近剪切";
+"history.hint" = "选择数字或使用方向键，Return 粘贴。";
+"history.more" = "%1$@ 等 %2$d 项";

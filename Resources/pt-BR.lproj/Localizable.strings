@@ -42,3 +42,9 @@
 "about.license" = "Gratuito e de código aberto · Licença MIT · Créditos de som em ATTRIBUTIONS.md";
 "hud.itemCut" = "%d item recortado";
 "hud.itemsCut" = "%d itens recortados";
+"history.recent" = "Recentes";
+"history.empty" = "Nada recortado ainda";
+"history.clear" = "Limpar histórico";
+"history.title" = "Recortes recentes";
+"history.hint" = "Escolha um número ou use as setas. Return cola.";
+"history.more" = "%1$@ e mais %2$d";

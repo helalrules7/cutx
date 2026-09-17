@@ -42,3 +42,9 @@
 "about.license" = "Ücretsiz ve açık kaynak · MIT lisansı · Ses kaynakları ATTRIBUTIONS.md dosyasında";
 "hud.itemCut" = "%d öğe kesildi";
 "hud.itemsCut" = "%d öğe kesildi";
+"history.recent" = "Son kesilenler";
+"history.empty" = "Henüz bir şey kesilmedi";
+"history.clear" = "Geçmişi temizle";
+"history.title" = "Son kesmeler";
+"history.hint" = "Bir numara seçin veya ok tuşlarını kullanın. Return yapıştırır.";
+"history.more" = "%1$@ ve %2$d tane daha";

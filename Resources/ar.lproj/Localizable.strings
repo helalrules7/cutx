@@ -55,3 +55,11 @@
 /* Cut indicator */
 "hud.itemCut" = "عنصر واحد مقصوص";
 "hud.itemsCut" = "%d عناصر مقصوصة";
+
+/* Cut history */
+"history.recent" = "الأخيرة";
+"history.empty" = "لم تقص شيئًا بعد";
+"history.clear" = "مسح السجل";
+"history.title" = "آخر ما قصصته";
+"history.hint" = "اختر رقمًا أو استخدم الأسهم. Return يلصق.";
+"history.more" = "%1$@ و%2$d عناصر أخرى";

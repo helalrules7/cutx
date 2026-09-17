@@ -22,12 +22,20 @@ private func url(_ name: String) -> URL { URL(fileURLWithPath: "/Users/x/\(name)
     #expect(h.entries[0].subtitle == "/Users/x")
 }
 
-// A group has to be recognisable at a glance in a list, so it names its first
-// item and says how many more came with it.
-@Test func groupNamesFirstItemAndCounts() {
+// A group is labelled by its first item plus a count. The count's wording is the
+// UI's job — this type must not hard-code an English word, or eleven languages
+// would show it untranslated.
+@Test func groupReportsFirstNameAndExtraCount() {
     var h = CutHistory()
     h.record([url("a.txt"), url("b.txt"), url("c.txt")])
-    #expect(h.entries[0].displayName == "a.txt + 2 more")
+    #expect(h.entries[0].displayName == "a.txt")
+    #expect(h.entries[0].extraCount == 2)
+}
+
+@Test func singleItemHasNoExtras() {
+    var h = CutHistory()
+    h.record([url("solo.txt")])
+    #expect(h.entries[0].extraCount == 0)
 }
 
 @Test func recordingNothingIsIgnored() {

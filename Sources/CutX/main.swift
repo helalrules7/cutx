@@ -21,6 +21,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let menuBar = MenuBarController()
         menuBar.onClear = { [weak self] in self?.clearCut() }
         menuBar.onOpenWindow = { [weak self] in self?.mainWindow.show() }
+        menuBar.onPasteHistory = { [weak self] id in self?.pasteFromHistory(entryID: id) }
+        menuBar.onClearHistory = { [weak self] in
+            self?.historyStore.history.clear()
+            self?.refreshMenuBar()
+        }
         self.menuBar = menuBar
 
         observeFrontmostApp()
@@ -98,7 +103,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             guard let self, self.state.isArmed else { return }
             if !self.state.isIntact(currentChangeCount: NSPasteboard.general.changeCount) {
                 self.state.clear()
-                self.menuBar?.update(names: [])
+                self.refreshMenuBar()
             }
         }
     }
@@ -126,7 +131,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             guard !urls.isEmpty else { return }
             state.arm(items: urls, changeCount: pasteboard.changeCount)
             self.historyStore.history.record(urls)
-            menuBar?.update(names: state.displayNames)
+            refreshMenuBar()
             sounds.playCut()
             hud.show(count: urls.count)
             return
@@ -145,7 +150,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         FinderBridge.sendMoveItemHere()
         state.clear()
-        menuBar?.update(names: [])
+        refreshMenuBar()
         sounds.playPaste()
 
         guard let destination,
@@ -163,7 +168,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         guard let entry = historyStore.history.entries.first(where: { $0.id == entryID }) else { return }
         let changeCount = FinderBridge.writeToPasteboard(entry.urls)
         state.arm(items: entry.urls, changeCount: changeCount)
-        menuBar?.update(names: state.displayNames)
+        refreshMenuBar()
         performPaste()
     }
 
@@ -178,7 +183,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             NSPasteboard.general.clearContents()
         }
         state.clear()
-        menuBar?.update(names: [])
+        refreshMenuBar()
+    }
+
+    private func refreshMenuBar() {
+        menuBar?.update(names: state.displayNames, history: historyStore.history.entries)
     }
 }
 

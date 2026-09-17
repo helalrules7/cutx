@@ -42,3 +42,9 @@
 "about.license" = "Kostenlos und quelloffen · MIT-Lizenz · Tonquellen in ATTRIBUTIONS.md";
 "hud.itemCut" = "%d Objekt ausgeschnitten";
 "hud.itemsCut" = "%d Objekte ausgeschnitten";
+"history.recent" = "Zuletzt";
+"history.empty" = "Noch nichts ausgeschnitten";
+"history.clear" = "Verlauf löschen";
+"history.title" = "Zuletzt ausgeschnitten";
+"history.hint" = "Zahl wählen oder Pfeiltasten. Return setzt ein.";
+"history.more" = "%1$@ und %2$d weitere";

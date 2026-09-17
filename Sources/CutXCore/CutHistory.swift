@@ -12,12 +12,17 @@ public struct HistoryEntry: Codable, Equatable, Identifiable, Sendable {
         self.cutAt = cutAt
     }
 
-    /// What the list shows. A group names its first item and says how many came
-    /// with it, so a row is recognisable without expanding anything.
+    /// The first item's file name. A group is labelled by its first item plus a
+    /// count, but the wording of that count is localised, so the UI assembles it
+    /// from `displayName` and `extraCount` rather than this type hard-coding
+    /// English.
     public var displayName: String {
-        guard let first = urls.first else { return "" }
-        let name = first.lastPathComponent
-        return urls.count == 1 ? name : "\(name) + \(urls.count - 1) more"
+        urls.first?.lastPathComponent ?? ""
+    }
+
+    /// How many items came with the first one. Zero for a single-item cut.
+    public var extraCount: Int {
+        max(urls.count - 1, 0)
     }
 
     /// Where the files are now. Updated after a paste.

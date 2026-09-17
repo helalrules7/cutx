@@ -55,3 +55,11 @@
 /* Cut indicator */
 "hud.itemCut" = "%d item cut";
 "hud.itemsCut" = "%d items cut";
+
+/* Cut history */
+"history.recent" = "Recent";
+"history.empty" = "Nothing cut yet";
+"history.clear" = "Clear history";
+"history.title" = "Recent cuts";
+"history.hint" = "Pick a number, or use the arrow keys. Return pastes.";
+"history.more" = "%1$@ + %2$d more";

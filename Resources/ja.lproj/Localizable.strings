@@ -42,3 +42,9 @@
 "about.license" = "無料・オープンソース · MIT ライセンス · サウンドのクレジットは ATTRIBUTIONS.md";
 "hud.itemCut" = "%d 項目をカット";
 "hud.itemsCut" = "%d 項目をカット";
+"history.recent" = "最近の項目";
+"history.empty" = "まだ何もカットしていません";
+"history.clear" = "履歴を消去";
+"history.title" = "最近のカット";
+"history.hint" = "番号か矢印キーで選び、Return で貼り付け。";
+"history.more" = "%1$@ 他 %2$d 件";

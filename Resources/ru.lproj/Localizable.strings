@@ -42,3 +42,9 @@
 "about.license" = "Бесплатно и с открытым исходным кодом · Лицензия MIT · Авторы звуков в ATTRIBUTIONS.md";
 "hud.itemCut" = "Вырезан %d объект";
 "hud.itemsCut" = "Вырезано объектов: %d";
+"history.recent" = "Недавние";
+"history.empty" = "Пока ничего не вырезано";
+"history.clear" = "Очистить историю";
+"history.title" = "Недавние вырезки";
+"history.hint" = "Выберите номер или стрелки. Return вставляет.";
+"history.more" = "%1$@ и ещё %2$d";

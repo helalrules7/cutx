@@ -42,3 +42,9 @@
 "about.license" = "Gratuito e open source · Licenza MIT · Crediti audio in ATTRIBUTIONS.md";
 "hud.itemCut" = "%d elemento tagliato";
 "hud.itemsCut" = "%d elementi tagliati";
+"history.recent" = "Recenti";
+"history.empty" = "Ancora niente tagliato";
+"history.clear" = "Cancella cronologia";
+"history.title" = "Tagli recenti";
+"history.hint" = "Scegli un numero o usa le frecce. Invio incolla.";
+"history.more" = "%1$@ e altri %2$d";
