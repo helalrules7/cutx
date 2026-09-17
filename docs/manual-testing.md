@@ -106,3 +106,9 @@ pkill -x CutX && open /Applications/CutX.app
       launches with no Gatekeeper warning.
 - [ ] `spctl --assess --type execute --verbose=4 /path/to/CutX.app` reports
       `accepted` and `source=Notarized Developer ID`.
+- [ ] **Store install, the way a stranger arrives.** Remove every copy, run
+      `tccutil reset Accessibility com.helalrules.CutX`, then install from the Mac
+      App Store. The setup screen must appear on its own, the checklist must turn
+      green without a relaunch, and the first ⌘X must work. Check first that no
+      competing ⌘X interceptor (Command X) is running — two of them fight over the
+      key and the result looks like a CutX bug. Verified 2026-09-17.
