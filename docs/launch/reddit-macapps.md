@@ -1,14 +1,14 @@
-# r/macapps post — ready, hold until App Store approval
+# r/macapps post — APPROVED 2026-09-17, ready to post
 
-Approval makes the account **Tier 1** under r/macapps' trust rules ("Mac App Store
-developers"), which is what unlocks a main-feed post. Also required regardless of
-tier: **10 local karma in r/MacApps** from genuine comments, a "I read the rules"
+CutX is live: **https://apps.apple.com/app/id6808423707** (App ID 6808423707). That makes the account **Tier 1** under
+r/macapps' trust rules ("Mac App Store developers"), so a main-feed post is unlocked.
+Still required regardless of tier: **10 local karma in r/MacApps** from genuine comments, a "I read the rules"
 acknowledgement, the `[OS]` title prefix, PCP body structure, the **Free** flair, and
 **no em dashes** anywhere (Reddit's auto-filter). One promo post per 30 days, counted
 even if removed — so it must be right the first time.
 
-r/MacOS: promotional posts **Saturdays (UTC) only**, and only for apps on the App Store
-or established repos. Post there the Saturday after approval, with different wording.
+r/MacOS: promotional posts **Saturdays (UTC) only**. The store requirement is now met.
+Next window: **Saturday 2026-09-19 (UTC)**, with the different wording below.
 
 Hacker News: Show HN is throttled for new accounts (karma 1). Build ordinary comment
 history first; the draft is below.
@@ -33,7 +33,7 @@ PRICING
 Free. No ads, no tracking, no account, no network access. MIT licensed. Signed and notarized by Apple. Also on the Mac App Store.
 
 GitHub: https://github.com/helalrules7/cutx
-Mac App Store: (add link after approval)
+Mac App Store: https://apps.apple.com/app/id6808423707
 Site and privacy policy: https://ahmedhelal.dev/cutx
 Support: https://ahmedhelal.dev/cutx/support
 
@@ -43,7 +43,7 @@ I would genuinely like to hear what breaks or what feels wrong.
 
 Title: Finally made Cmd+X cut files in Finder, free and open source, feedback welcome
 
-Coming from Windows, Cmd+X doing nothing on files drove me up the wall, so I built a small menu-bar app that fixes it. Cmd+X to cut, Cmd+V to move. Finder performs the move itself (the app just triggers Finder's own Copy and Move Item Here), so Cmd+Z undo and all the normal dialogs still work. Free, MIT, no tracking, needs only the Accessibility permission. It cannot grey out the cut files like Windows does, macOS does not allow that, so there is a menu-bar count instead. On the Mac App Store and GitHub: https://github.com/helalrules7/cutx
+Coming from Windows, Cmd+X doing nothing on files drove me up the wall, so I built a small menu-bar app that fixes it. Cmd+X to cut, Cmd+V to move. Finder performs the move itself (the app just triggers Finder's own Copy and Move Item Here), so Cmd+Z undo and all the normal dialogs still work. Free, MIT, no tracking, needs only the Accessibility permission. It cannot grey out the cut files like Windows does, macOS does not allow that, so there is a menu-bar count instead. Mac App Store: https://apps.apple.com/app/id6808423707 · Source: https://github.com/helalrules7/cutx
 
 ## Show HN (after the account has some history)
 
