@@ -6,14 +6,16 @@ private func ctx(
     selection: Bool = true,
     armed: Bool = true,
     intact: Bool = true,
-    controlHotkeys: Bool = false
+    controlHotkeys: Bool = false,
+    history: Bool = true
 ) -> Context {
     Context(
         finderFrontmost: finder,
         hasSelection: selection,
         isArmed: armed,
         pasteboardIntact: intact,
-        controlHotkeysEnabled: controlHotkeys
+        controlHotkeysEnabled: controlHotkeys,
+        historyEnabled: history
     )
 }
 
@@ -73,9 +75,30 @@ private func ctrl(_ code: UInt16) -> KeyEvent {
     #expect(decide(event: event, context: ctx()) == .passThrough)
 }
 
-// ⌥⌘V is Finder's own Move Item Here; users who type it directly must keep it.
-@Test func optionCommandVPassesThrough() {
+@Test func optionCommandVOpensHistory() {
     let event = KeyEvent(keyCode: KeyCode.v, command: true, control: false, shift: false, option: true)
+    #expect(decide(event: event, context: ctx()) == .showHistory)
+}
+
+// Without Pro the key must do what it always did in Finder: Move Item Here.
+@Test func optionCommandVPassesThroughWithoutHistory() {
+    let event = KeyEvent(keyCode: KeyCode.v, command: true, control: false, shift: false, option: true)
+    #expect(decide(event: event, context: ctx(history: false)) == .passThrough)
+}
+
+@Test func optionCommandVOutsideFinderPassesThrough() {
+    let event = KeyEvent(keyCode: KeyCode.v, command: true, control: false, shift: false, option: true)
+    #expect(decide(event: event, context: ctx(finder: false)) == .passThrough)
+}
+
+// The panel is about pasting; there is nothing to show when nothing was cut.
+@Test func optionCommandVWithEmptyHistoryPassesThrough() {
+    let event = KeyEvent(keyCode: KeyCode.v, command: true, control: false, shift: false, option: true)
+    #expect(decide(event: event, context: ctx(armed: false, history: false)) == .passThrough)
+}
+
+@Test func optionCommandXIsNotHistory() {
+    let event = KeyEvent(keyCode: KeyCode.x, command: true, control: false, shift: false, option: true)
     #expect(decide(event: event, context: ctx()) == .passThrough)
 }
 

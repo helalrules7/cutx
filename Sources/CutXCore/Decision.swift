@@ -7,6 +7,8 @@ public enum Decision: Equatable {
     case cut
     /// Suppress the event; forward ⌥⌘V to Finder and clear state.
     case paste
+    /// Suppress the event; open the history panel.
+    case showHistory
 }
 
 public enum KeyCode {
@@ -36,26 +38,35 @@ public struct Context: Equatable, Sendable {
     public let isArmed: Bool
     public let pasteboardIntact: Bool
     public let controlHotkeysEnabled: Bool
+    public let historyEnabled: Bool
 
     public init(
         finderFrontmost: Bool,
         hasSelection: Bool,
         isArmed: Bool,
         pasteboardIntact: Bool,
-        controlHotkeysEnabled: Bool
+        controlHotkeysEnabled: Bool,
+        historyEnabled: Bool
     ) {
         self.finderFrontmost = finderFrontmost
         self.hasSelection = hasSelection
         self.isArmed = isArmed
         self.pasteboardIntact = pasteboardIntact
         self.controlHotkeysEnabled = controlHotkeysEnabled
+        self.historyEnabled = historyEnabled
     }
 }
 
 /// Classifies a keystroke. When anything is uncertain the answer is `.passThrough`:
 /// a key that behaves normally is always better than a key that surprises the user.
 public func decide(event: KeyEvent, context: Context) -> Decision {
-    // Any extra modifier means a different shortcut. Never claim it.
+    // ⌥⌘V is Finder's Move Item Here. CutX claims it only to show history, and
+    // only in Finder with something to show; otherwise Finder keeps it.
+    if event.option, event.command, !event.control, !event.shift, event.keyCode == KeyCode.v {
+        return (context.finderFrontmost && context.historyEnabled) ? .showHistory : .passThrough
+    }
+
+    // Any other extra modifier means a different shortcut. Never claim it.
     guard !event.shift, !event.option else { return .passThrough }
 
     // Exactly one of Command / Control, never both.
