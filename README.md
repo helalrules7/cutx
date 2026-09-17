@@ -11,7 +11,8 @@ The items move — they are removed from the original location, exactly like Win
 
 Free, open source, no ads, no tracking. Speaks eleven languages.
 
-[Download](https://github.com/helalrules7/cutx/releases) ·
+[Mac App Store](https://apps.apple.com/app/id6808423707) ·
+[Direct download](https://github.com/helalrules7/cutx/releases) ·
 [Buy me a coffee ☕](https://buymeacoffee.com/ahmedhelal)
 
 </div>
@@ -52,6 +53,10 @@ CutX reads the physical key, not the character on it, so it works on any keyboar
 layout — Arabic, AZERTY, QWERTZ. Press wherever X lives on your keyboard.
 
 ## Install
+
+**From the Mac App Store:** [apps.apple.com](https://apps.apple.com/app/id6808423707) — one click, free.
+
+**Or download directly:**
 
 1. Download `CutX.zip` from [Releases](https://github.com/helalrules7/cutx/releases).
 2. Unzip and drag **CutX.app** to Applications.
