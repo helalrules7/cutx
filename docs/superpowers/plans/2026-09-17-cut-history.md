@@ -21,6 +21,11 @@
 - Free tier is unchanged: the entire history is Pro.
 - History is capped at **20 entries**. Older entries fall off the end.
 - Existing tests must keep passing: 36 before this plan starts.
+- **`./scripts/test.sh` builds the whole package, app target included.** So the app
+  must always compile, even mid-plan. After Task 3 the app was unblocked with a
+  `.showHistory` case in `HotkeyMonitor` and `historyEnabled: false` at both `Context`
+  call sites in `main.swift`; Task 7 replaces the `false` with the real condition.
+  If a task leaves the app target broken, the test suite cannot run at all.
 
 ## File Structure
 
@@ -1043,17 +1048,8 @@ final class HistoryPanel: NSObject, NSTableViewDataSource, NSTableViewDelegate {
 
 - [ ] **Step 2: Handle the new decision in `HotkeyMonitor.swift`**
 
-Add the closure next to `onPaste`:
-```swift
-    var onShowHistory: () -> Void = {}
-```
-
-Add the case to the switch in `handle`:
-```swift
-        case .showHistory:
-            DispatchQueue.main.async { [weak self] in self?.onShowHistory() }
-            return nil
-```
+`onShowHistory` and the `.showHistory` switch case already exist — they were added
+right after Task 3 so the package would keep building. Nothing to do here.
 
 - [ ] **Step 3: Wire it in `main.swift`**
 
@@ -1064,7 +1060,8 @@ Add the property:
     }
 ```
 
-Add the field to the context builder in `currentContext()`:
+Replace the placeholder `historyEnabled: false` in `currentContext()` with the real
+condition (leave the fallback `Context` in the monitor's closure at `false`):
 ```swift
             historyEnabled: Entitlements.hasPro && !historyStore.history.entries.isEmpty
 ```

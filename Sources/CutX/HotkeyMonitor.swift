@@ -11,6 +11,7 @@ final class HotkeyMonitor {
 
     var onCut: () -> Void = {}
     var onPaste: () -> Void = {}
+    var onShowHistory: () -> Void = {}
 
     init(contextProvider: @escaping () -> Context) {
         self.contextProvider = contextProvider
@@ -95,6 +96,9 @@ final class HotkeyMonitor {
             return nil
         case .paste:
             DispatchQueue.main.async { [weak self] in self?.onPaste() }
+            return nil
+        case .showHistory:
+            DispatchQueue.main.async { [weak self] in self?.onShowHistory() }
             return nil
         }
     }

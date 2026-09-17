@@ -31,7 +31,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 hasSelection: false,
                 isArmed: false,
                 pasteboardIntact: false,
-                controlHotkeysEnabled: false
+                controlHotkeysEnabled: false,
+                historyEnabled: false
             )
         })
         monitor.onCut = { [weak self] in self?.performCut() }
@@ -65,7 +66,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             pasteboardIntact: state.isIntact(
                 currentChangeCount: NSPasteboard.general.changeCount
             ),
-            controlHotkeysEnabled: preferences.controlHotkeys
+            controlHotkeysEnabled: preferences.controlHotkeys,
+            historyEnabled: false
         )
     }
 
