@@ -245,7 +245,7 @@ public struct CutHistory: Codable, Equatable, Sendable {
 - [ ] **Step 4: Run tests to verify they pass**
 
 Run: `./scripts/test.sh 2>&1 | tail -5`
-Expected: `48 tests passed`.
+Expected: `49 tests passed`.
 
 - [ ] **Step 5: Commit**
 
@@ -335,7 +335,7 @@ public enum Entitlements {
 - [ ] **Step 4: Run tests to verify they pass**
 
 Run: `./scripts/test.sh 2>&1 | tail -5`
-Expected: `50 tests passed`.
+Expected: `51 tests passed`.
 
 - [ ] **Step 5: Commit**
 
@@ -467,7 +467,7 @@ The rest of the function is unchanged.
 - [ ] **Step 4: Run tests to verify they pass**
 
 Run: `./scripts/test.sh 2>&1 | tail -5`
-Expected: `54 tests passed`.
+Expected: `55 tests passed`.
 
 - [ ] **Step 5: Commit**
 
@@ -677,7 +677,7 @@ Add `import ApplicationServices` at the top of `FinderBridge.swift` if it is not
 - [ ] **Step 4: Build and confirm the tests still pass**
 
 Run: `swift build 2>&1 | grep -E "error" | head -5; ./scripts/test.sh 2>&1 | grep -E "Test run with|error:"`
-Expected: no errors, `54 tests passed`.
+Expected: no errors, `55 tests passed`.
 
 - [ ] **Step 5: Commit**
 
